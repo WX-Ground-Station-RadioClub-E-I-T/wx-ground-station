@@ -19,7 +19,8 @@ LOGFILE=${LOG_DIR}/${FILEKEY}.log
 echo $@ >> $LOGFILE
 
 #/usr/local/bin/rtl_biast -b 1 2>> $LOGFILE
-sudo timeout $DURATION rtl_fm -f ${FREQ}M -s 60k -g 45 -p 0 -E wav -E deemp -F 9 - 2>> $LOGFILE | sox -t wav - $AUDIO_FILE rate 11025
+#sudo timeout $DURATION rtl_fm -f ${FREQ}M -s 60k -g 45 -p 0 -E wav -E deemp -F 9 - 2>> $LOGFILE | sox -t wav - $AUDIO_FILE rate 11025
+sudo timeout $DURATION airspyhf_rx -f ${FREQ} -a 60000 -m on -w -g on - 2>> $LOGFILE | sox -t wav - $AUDIO_FILE rate 11025
 #/usr/local/bin/rtl_biast -b 0 2>> $LOGFILE
 
 PassStart=`expr $START_TIME + 90`

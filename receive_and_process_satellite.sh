@@ -1,5 +1,6 @@
 #!/bin/bash
 
+BASEDIR="/home/acien101/gitRepos/wx-ground-station"
 SAT=$1
 FREQ=$2
 FILEKEY=$3
@@ -20,7 +21,7 @@ echo $@ >> $LOGFILE
 
 #/usr/local/bin/rtl_biast -b 1 2>> $LOGFILE
 #sudo timeout $DURATION rtl_fm -f ${FREQ}M -s 60k -g 45 -p 0 -E wav -E deemp -F 9 - 2>> $LOGFILE | sox -t wav - $AUDIO_FILE rate 11025
-sudo timeout $DURATION airspyhf_rx -f ${FREQ} -a 60000 -m on -w -g on - 2>> $LOGFILE | sox -t wav - $AUDIO_FILE rate 11025
+sudo timeout $DURATION airspyhf_rx -f ${FREQ} -a 768000 -m on -g on -l low -w $AUDIO_FILE > $LOGFILE 
 #/usr/local/bin/rtl_biast -b 0 2>> $LOGFILE
 
 PassStart=`expr $START_TIME + 90`

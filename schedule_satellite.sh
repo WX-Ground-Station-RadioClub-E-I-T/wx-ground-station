@@ -1,11 +1,10 @@
 #!/bin/bash
 
-BASEDIR="/home/acien101/gitRepos/wx-ground-station"
-cd BASEDIR
-
 SAT=$1
 FREQ=$2
-TLE_FILE=weather.tle
+TLE_FILE=weather.tle # NO SE PUEDE PONER RUTA ABSOLUTA
+
+echo $TLE_FILE
 PREDICTION_START=`/usr/bin/predict -t $TLE_FILE -p "$SAT" | head -1`
 PREDICTION_END=`/usr/bin/predict -t $TLE_FILE -p "$SAT" | tail -1`
 
@@ -22,9 +21,11 @@ MAXELEV=`/usr/bin/predict -t $TLE_FILE -p "${SAT}" | awk -v max=0 '{if($5>max){m
 START_LAT=`echo $PREDICTION_START | awk '{print $8}'`
 END_LAT=`echo $PREDICTION_END | awk '{print $8}'`
 
-echo $MAXELEV
-echo $START_LAT
-echo $END_LAT
+if $DEBUG; then
+  PREDICTION_END_DATE=`echo $PREDICTION_END | awk '{print $3 " " $4}'`
+  echo FIRST PREDICTION END AT: $PREDICTION_END_DATE
+  echo MAX ELEV: $MAXELEV
+fi
 
 if [ $START_LAT -gt $END_LAT ]
   then
@@ -59,10 +60,10 @@ while [ \"$END_EPOCH_DATE\" = \"`date +%D`\" ] || [ \"$END_EPOCH_DATE\" = \"`dat
 
   if [ $MAXELEV -ge 20 ]
     then
-      FILEKEY="${SAT}-${OUTDATE}"
+      FILEKEY="${SAT// /_}-${OUTDATE}"
       echo FILEKEY $FILEKEY
 
-      COMMAND="receive_and_process_satellite.sh \"${SAT}\" $FREQ $FILEKEY $TLE_FILE $START_EPOCH $JOB_TIMER $MAXELEV $DIR"
+      COMMAND="./receive_satellite.sh \"${SAT}\" $FREQ \"${FILEKEY}\" $WX_GROUND_DIR/$TLE_FILE $START_EPOCH $JOB_TIMER $MAXELEV $DIR 32000 32000"
       echo $COMMAND
       echo $COMMAND | at $JOB_START
 

@@ -1,8 +1,5 @@
 #!/bin/bash
 
-#BASEDIR="/home/acien101/gitRepos/wx-ground-station"
-#cd BASEDIR
-
 SAT=$1
 FILEKEY=$2
 TLE_FILE=$3

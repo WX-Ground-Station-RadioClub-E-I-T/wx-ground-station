@@ -17,11 +17,11 @@ Features:
 ### Some linux dependencies
 
 ```
-sudo apt-get install autoconf
-sudo apt-get install cmake
-sudo apt-get install sox
-sudo apt-get install at
-sudo apt-get install libncurses5-dev libncursesw5-dev
+$ sudo apt-get install autoconf
+$ sudo apt-get install cmake
+$ sudo apt-get install sox
+$ sudo apt-get install at
+$ sudo apt-get install libncurses5-dev libncursesw5-dev
 ```
 
 ### Doppler
@@ -38,10 +38,10 @@ Follow install instructions from here: <https://github.com/cubehub/demod>
 [Link](https://github.com/kd2bd/predict/)
 
 ```
-wget https://www.qsl.net/kd2bd/predict-2.2.5.tar.bz2
-tar -xvf predict-2.2.5.tar.bz2
-cd predict
-sudo ./configure /usr/bin
+$ wget https://www.qsl.net/kd2bd/predict-2.2.5.tar.bz2
+$ tar -xvf predict-2.2.5.tar.bz2
+$ cd predict
+$ sudo ./configure /usr/bin
 ```
 
 ### Wxtoimg
@@ -49,8 +49,8 @@ sudo ./configure /usr/bin
 [Link](https://wxtoimgrestored.xyz)
 
 ```
-wget https://wxtoimgrestored.xyz/beta/wxtoimg-armhf-2.11.2-beta.deb
-sudo dpkg -i wxtoimg-armhf-2.11.2-beta.deb
+$ wget https://wxtoimgrestored.xyz/beta/wxtoimg-armhf-2.11.2-beta.deb
+$ sudo dpkg -i wxtoimg-armhf-2.11.2-beta.deb
 ```
 
 ### Spyserver_client
@@ -67,6 +67,7 @@ $ make
 $ sudo make install
 $ cd ../..
 $ git clone https://github.com/miweber67/spyserver_client
+$ cd spyserver_client
 $ git checkout ee20bcaf908fc859
 $ make
 $ sudo cp ./ss_client /usr/bin/ss_client

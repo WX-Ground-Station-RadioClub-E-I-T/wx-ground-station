@@ -1,7 +1,6 @@
 #!/bin/bash
 
-#BASEDIR="/home/acien101/gitRepos/wx-ground-station"
-#cd $BASEDIR
+cd $WX_GROUND_DIR
 
 DEBUG=true
 

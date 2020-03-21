@@ -1,6 +1,5 @@
 #!/bin/bash
 
-BASEDIR="/home/acien101/gitRepos/wx-ground-station"
 SAT=$1
 FREQ=$2
 FILEKEY=$3

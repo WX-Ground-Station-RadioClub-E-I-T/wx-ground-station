@@ -1,8 +1,10 @@
 #!/bin/bash
 
+cd $WX_GROUND_DIR
+
 SAT=$1
 FREQ=$2
-TLE_FILE=weather.tle # NO SE PUEDE PONER RUTA ABSOLUTA
+TLE_FILE=weather.tle # CANT PUT ABSOLUT PATH, PREDICT BUG, SO MOVE TO $WX_GROUND_DIR FIRST
 
 echo $TLE_FILE
 PREDICTION_START=`/usr/bin/predict -t $TLE_FILE -p "$SAT" | head -1`

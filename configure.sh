@@ -1,30 +1,26 @@
 
 # create directories
-if [ ! -d "audio" ] 
+if [ ! -d "audio" ]
 then
     mkdir audio
 fi
 
-if [ ! -d "images" ] 
+if [ ! -d "images" ]
 then
     mkdir images
 fi
 
-if [ ! -d "logs" ] 
+if [ ! -d "logs" ]
 then
     mkdir logs
 fi
 
-currentDir=`echo $PWD`
-echo "configuring for" $currentDir
-
-sed -i "s|INSTALL_DIR|$currentDir|g" schedule_all.sh
-sed -i "s|INSTALL_DIR|$currentDir|g" schedule_satellite.sh
-sed -i "s|INSTALL_DIR|$currentDir|g" receive_and_process_satellite.sh
-
 chmod +x schedule_all.sh
 chmod +x schedule_satellite.sh
-chmod +x receive_and_process_satellite.sh
+chmod +x schedule_rotor.sh
+chmod +x upload.sh
+chmod +x decode_satellite.sh
+chmod +x receive_satellite.sh
 
 cronjobcmd="$currentDir/schedule_all.sh"
 cronjob="0 0 * * * $cronjobcmd"

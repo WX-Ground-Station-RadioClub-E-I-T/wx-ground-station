@@ -49,12 +49,10 @@ put $MCIR_FILE_DIR $MCIR_FILE
 put $THERM_FILE_DIR $THERM_FILE
 quit
 END_SCRIPT
-exit 0
-
 
 # Send web hook to IFTTT
-if [[ $WX_GROUND_IFTTT_WEBHOOK != "" ]]; then
-  IMAGE_URL=${WX_GROUND_FTP_URL}/${FTP_DIRECTORY}/${SAT}/${DATE}/$MCIR_FILE_DIR
-  HUMAN_TIME="date +%H:%M"
+if [[ "$WX_GROUND_IFTTT_WEBHOOK" != "" ]]; then
+  IMAGE_URL="${WX_GROUND_FTP_URL}/${FTP_DIRECTORY}/${SAT}/${DATE}/${FILEKEY}-MCIR.png"
+  HUMAN_TIME=date +%H:%M
   curl -X POST -H "Content-Type: application/json" -d '{"value1":"${SAT}","value2":"${HUMAN_TIME}","value3":"${IMAGE_URL}"}' ${WX_GROUND_IFTTT_WEBHOOK}
 fi

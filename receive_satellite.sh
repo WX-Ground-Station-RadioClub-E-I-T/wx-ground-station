@@ -41,5 +41,5 @@ echo "timeout $DURATION ss_client iq -r ${SERVER} -q ${PORT} -f ${FREQ} -s ${SAM
 timeout $DURATION ss_client iq -r ${SERVER} -q ${PORT} -f ${FREQ} -s ${SAMPLERATE} 2>> $LOGFILE | doppler track -s ${SAMPLERATE} -i i16 --tlefile ${TLE_FILE} --tlename "${SAT}" --location lat=${RX_LAT},lon=${RX_LON},alt=${RX_ALT} --frequency ${FREQ} --offset ${OFFSET} 2>> $LOGFILE | tee ${IQ_FILE} | demod --samplerate ${SAMPLERATE} --intype i16 --outtype i16 --bandwidth ${BANDWIDTH} fm --deviation ${DEVIATION} 2>> $LOGFILE | sox -t raw -e signed-integer -r ${SAMPLERATE} -b 16 -c 1 -V1 - ${AUDIO_FILE} rate ${OUTPUTSAMPLERATE}
 
 
-echo "./decode_satellite.sh \"${SAT}\" ${AUDIO_FILE} ${TLE_FILE} ${START_TIME}"
-./decode_satellite.sh "${SAT}" "${FILEKEY}" ${TLE_FILE} ${START_TIME} ${OUTPUTSAMPLERATE}
+echo "$WX_GROUND_DIR/decode_satellite.sh \"${SAT}\" ${AUDIO_FILE} ${TLE_FILE} ${START_TIME}"
+$WX_GROUND_DIR/decode_satellite.sh "${SAT}" "${FILEKEY}" ${TLE_FILE} ${START_TIME} ${OUTPUTSAMPLERATE}

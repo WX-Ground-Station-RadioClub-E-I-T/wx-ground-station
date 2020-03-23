@@ -15,11 +15,7 @@ LOGFILE=${LOG_DIR}/${FILEKEY}.log
 
 echo $@ >> $LOGFILE
 
-echo $SAMPLERATE
-
 PassStart=`expr $START_TIME + 90`
-
-echo "a"
 
 if [[ "$SAT" == "NOAA 19" || "$SAT" == "NOAA 15" || "$SAT" == "NOAA 18" ]]; then
   if [ -e $AUDIO_FILE ]
@@ -42,11 +38,10 @@ if [[ "$SAT" == "NOAA 19" || "$SAT" == "NOAA 15" || "$SAT" == "NOAA 18" ]]; then
       echo "/usr/local/bin/wxtoimg -m ${MAP_FILE} -f ${SAMPLERATE} -e therm $AUDIO_FILE ${IMAGE_DIR}/${FILEKEY}-THERM.png" >> $LOGFILE
       /usr/local/bin/wxtoimg -m ${MAP_FILE} -f ${SAMPLERATE} -e therm $AUDIO_FILE ${IMAGE_DIR}/${FILEKEY}-THERM.png >> $LOGFILE 2>&1
 
-      echo "./upload.sh \"${SAT}\" ${FILEKEY}" >> $LOGFILE 2>&1
-      ./upload.sh "${SAT}" ${FILEKEY} >> $LOGFILE 2>&1
+      echo "$WX_GROUND_DIR/upload.sh \"${SAT}\" ${FILEKEY}" >> $LOGFILE 2>&1
+      $WX_GROUND_DIR/upload.sh "${SAT}" ${FILEKEY}
   else
     echo "NO AUDIO FILE" >>$LOGFILE
   fi
 fi
 
-echo "b"

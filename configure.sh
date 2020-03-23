@@ -22,6 +22,6 @@ chmod +x upload.sh
 chmod +x decode_satellite.sh
 chmod +x receive_satellite.sh
 
-cronjobcmd="$currentDir/schedule_all.sh"
+cronjobcmd="$HOME/.profile; $currentDir/schedule_all.sh"
 cronjob="0 0 * * * $cronjobcmd"
 ( crontab -l | grep -v -F "$cronjobcmd" ; echo "$cronjob" ) | crontab -

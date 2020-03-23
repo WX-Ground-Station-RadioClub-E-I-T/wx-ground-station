@@ -4,6 +4,9 @@ cd $WX_GROUND_DIR
 
 SAT=$1
 FREQ=$2
+BANDWIDTH=$3
+DEVIATION=$4
+OUTPUTSAMPLERATE=$5
 TLE_FILE=weather.tle # CANT PUT ABSOLUT PATH, PREDICT BUG, SO MOVE TO $WX_GROUND_DIR FIRST
 
 echo $TLE_FILE
@@ -65,9 +68,9 @@ while [ \"$END_EPOCH_DATE\" = \"`date +%D`\" ] || [ \"$END_EPOCH_DATE\" = \"`dat
       FILEKEY="${SAT// /_}-${OUTDATE}"
       echo FILEKEY $FILEKEY
 
-      COMMAND="./receive_satellite.sh \"${SAT}\" $FREQ \"${FILEKEY}\" $WX_GROUND_DIR/$TLE_FILE $START_EPOCH $JOB_TIMER $MAXELEV $DIR 32000 32000"
+      COMMAND="./receive_satellite.sh \"${SAT}\" $FREQ \"${FILEKEY}\" $WX_GROUND_DIR/$TLE_FILE $START_EPOCH $JOB_TIMER $MAXELEV $DIR $BANDWIDTH $DEVIATION $OUTPUTSAMPLERATE"
       echo $COMMAND
-      echo $COMMAND | at $JOB_START
+      #echo $COMMAND | at $JOB_START
 
       TLE1=`grep "$SAT" $TLE_FILE -A 2 | tail -2 | head -1 | tr -d '\r'`
       TLE2=`grep "$SAT" $TLE_FILE -A 2 | tail -2 | tail -1 | tr -d '\r'`

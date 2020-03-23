@@ -9,7 +9,11 @@ SAMPLERATE=$5
 IMAGE_DIR=${WX_GROUND_DIR}/images
 LOG_DIR=${WX_GROUND_DIR}/logs
 AUDIO_DIR=${WX_GROUND_DIR}/audio
+DRAFT_DIR=${WX_GROUND_DIR}/draft
 AUDIO_FILE=${AUDIO_DIR}/${FILEKEY}.wav
+AUDIO_FILE_NORM=${AUDIO_DIR}/${FILEKEY}_NORM.wav # For METEOR-M 2
+AUDIO_FILE_DEMOD=${AUDIO_DIR}/${FILEKEY}.qpsk # For METEOR-M 2
+AUDIO_FILE_BASE=${AUDIO_DIR}/${FILEKEY} # For METEOR-M 2
 MAP_FILE=${IMAGE_DIR}/${FILEKEY}-map.png
 LOGFILE=${LOG_DIR}/${FILEKEY}.log
 
@@ -42,10 +46,81 @@ if [[ "$SAT" == "NOAA 19" || "$SAT" == "NOAA 15" || "$SAT" == "NOAA 18" ]]; then
       echo "/usr/local/bin/wxtoimg -m ${MAP_FILE} -f ${SAMPLERATE} -e therm $AUDIO_FILE ${IMAGE_DIR}/${FILEKEY}-THERM.png" >> $LOGFILE
       /usr/local/bin/wxtoimg -m ${MAP_FILE} -f ${SAMPLERATE} -e therm $AUDIO_FILE ${IMAGE_DIR}/${FILEKEY}-THERM.png >> $LOGFILE 2>&1
 
-      #upload.sh "${SAT}" ${AUDIO_FILE} ${FILEKEY}
+      upload.sh "${SAT}" ${FILEKEY}
   else
     echo "NO AUDIO FILE" >>$LOGFILE
   fi
 fi
 
-echo "b"
+if [[ "$SAT" == "METEOR-M 2" ]]; then
+
+  if [ `wc -c <${AUDIO_FILE}` -le 1000000 ]; then
+      echo "Audio file ${AUDIO_FILE}.wav too small, probably wrong recording" 2>> $LOGFILE
+      exit
+  fi
+
+  # Normalise:
+  #sox ${AUDIO_FILE} ${AUDIO_FILE_NORM} channels 1 gain -n
+  sox ${AUDIO_FILE} ${AUDIO_FILE_NORM} gain -n
+
+  # Demodulate:
+  if [[ ${FILEKEY: -2} == "M2" ]]; then
+      yes | meteor_demod -B -m qpsk  -o ${AUDIO_FILE_DEMOD} ${AUDIO_FILE_NORM}
+  else
+      yes | meteor_demod -B -b 50 -m oqpsk -o ${AUDIO_FILE_DEMOD} ${AUDIO_FILE_NORM}
+  fi
+  touch -r ${AUDIO_FILE} ${AUDIO_FILE_DEMOD}
+
+
+  ## MIRAR LO SIGUIENTEEEE SI PUEDO PONER EL DEC
+  # Decode:
+  if [[ ${FILEKEY: -2} == "M2" ]]; then
+      medet ${AUDIO_FILE_DEMOD} ${AUDIO_FILE_BASE} -cd -q
+  else
+      medet ${AUDIO_FILE_DEMOD} ${AUDIO_FILE_BASE} -diff -cd -q  # -int for 80KHz ??
+  fi
+  touch -r ${AUDIO_FILE} ${AUDIO_FILE_BASE}.dec
+
+  # Create image:
+  # composite only
+  medet ${AUDIO_FILE_BASE}.dec ${AUDIO_FILE_BASE} -r 65 -g 65 -b 64 -d -q
+  # three channels
+  #medet ${AUDIO_FILE_BASE}.dec ${AUDIO_FILE_BASE} -S -r 65 -g 65 -b 64 -d -q
+  # IR
+  medet ${AUDIO_FILE_BASE}.dec ${AUDIO_FILE_BASE}_IR -r 68 -g 68 -b 68 -d -q
+
+  if [[ -f "${AUDIO_FILE_BASE}.bmp" ]]; then
+    convert ${AUDIO_FILE_BASE}.bmp ${IMAGE_DIR}/${FILEKEY}.png &> /dev/null
+    rm -f ${AUDIO_FILE_BASE}.bmp
+    touch -r ${AUDIO_FILE} ${IMAGE_DIR}/${FILEKEY}.png
+    # check brightness
+    brightness=`convert ${IMAGE_DIR}/${FILEKEY}.png -colorspace Gray -format "%[fx:image.mean]" info:`
+    if (( $(echo "$brightness > 0.09" |bc -l) )); then
+      echo -e "\nComposite image created!" 2>> $LOGFILE
+    else
+      mv ${IMAGE_DIR}/${FILEKEY}.png ${DRAFT_DIR}
+      echo -e "\nComposite image too dark, probably bad quality." 2>> $LOGFILE
+    fi
+  fi
+
+  if [[ -f "${AUDIO_FILE_BASE}_IR.bmp" ]]; then
+    convert ${AUDIO_FILE_BASE}_IR.bmp -negate -normalize ${IMAGE_DIR}/${FILEKEY}_IR.png &> /dev/null
+    rm -f ${AUDIO_FILE_BASE}_IR.bmp
+    touch -r ${AUDIO_FILE} ${IMAGE_DIR}/${FILEKEY}_IR.png
+    # check brightness
+    brightness=`convert ${IMAGE_DIR}/${FILEKEY}_IR.png -negate -colorspace Gray -format "%[fx:image.mean]" info:`
+    if (( $(echo "$brightness > 0.09" |bc -l) )); then
+      echo -e "\nIR image created!" 2>> $LOGFILE
+    else
+      mv ${IMAGE_DIR}/${FILEKEY}_IR.png ${DRAFT_DIR}
+      echo -e "\nIR image too dark, probably bad quality." 2>> $LOGFILE
+    fi
+  fi
+
+
+  rm -f ${AUDIO_FILE_NORM}
+  rm -f ${AUDIO_FILE_DEMOD}
+  rm -f ${AUDIO_FILE_BASE}.dec
+
+  upload.sh "${SAT}" ${FILEKEY}
+fi

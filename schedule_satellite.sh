@@ -60,7 +60,7 @@ while [ \"$END_EPOCH_DATE\" = \"`date +%D`\" ] || [ \"$END_EPOCH_DATE\" = \"`dat
   OUTDATE=`date --date="TZ=\"UTC\" $START_TIME" +%Y%m%d-%H%M%S`
   echo OUTDATE $OUTDATE
 
-  if [ $MAXELEV -ge 20 ]
+  if [ $MAXELEV -ge $WX_GROUND_MAX_ELEV ]
     then
       FILEKEY="${SAT// /_}-${OUTDATE}"
       echo FILEKEY $FILEKEY

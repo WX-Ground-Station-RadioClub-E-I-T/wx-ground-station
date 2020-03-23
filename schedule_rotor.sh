@@ -28,7 +28,7 @@ fi
 
 echo ---
 while [ \"$END_EPOCH_DATE\" = \"`date +%D`\" ] || [ \"$END_EPOCH_DATE\" = \"`date --date="tomorrow" +%D`\" ]; do
-  if [ $MAXELEV -ge 5 ]
+  if [ $MAXELEV -ge $WX_GROUND_MAX_ELEV ]
     then
       while IFS= read -r line; do
           ELE=`echo $line | awk '{print $5}'`

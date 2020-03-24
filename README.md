@@ -22,6 +22,7 @@ $ sudo apt-get install cmake
 $ sudo apt-get install sox
 $ sudo apt-get install at
 $ sudo apt-get install libncurses5-dev libncursesw5-dev
+$ sudo apt-get install imagemagick
 ```
 
 ### Doppler
@@ -37,11 +38,14 @@ Follow install instructions from here: <https://github.com/cubehub/demod>
 
 [Link](https://github.com/kd2bd/predict/)
 
+Default Predict is not accuare enoght to move the annetas. So we have to change a variable on sorce and then compile it first.
+
 ```
-$ wget https://www.qsl.net/kd2bd/predict-2.2.5.tar.bz2
-$ tar -xvf predict-2.2.5.tar.bz2
+$ git clone https://github.com/kd2bd/predict
 $ cd predict
-$ sudo ./configure /usr/bin
+$ sed -i 's/25000.0/2000000.0/g' predict.c
+$ sudo ./build.sh
+$ sudo cp predict /usr/bin
 ```
 
 ### Wxtoimg
@@ -49,8 +53,8 @@ $ sudo ./configure /usr/bin
 [Link](https://wxtoimgrestored.xyz)
 
 ```
-$ wget https://wxtoimgrestored.xyz/beta/wxtoimg-armhf-2.11.2-beta.deb
-$ sudo dpkg -i wxtoimg-armhf-2.11.2-beta.deb
+$ wget https://wxtoimgrestored.xyz/beta/wxtoimg-amd64-2.11.2-beta.deb
+$ sudo dpkg -i wxtoimg-amd64-2.11.2-beta.deb
 ```
 
 ### Spyserver_client
@@ -71,6 +75,29 @@ $ cd spyserver_client
 $ git checkout ee20bcaf908fc859
 $ make
 $ sudo cp ./ss_client /usr/bin/ss_client
+```
+
+### meteor_demod
+
+[Link](https://github.com/dbdexter-dev/meteor_demod)
+
+```
+$ git clone https://github.com/dbdexter-dev/meteor_demod
+$ cd meteor_demod
+$ make
+$ sudo make install
+```
+
+### meteor_decoder
+
+[Link](https://github.com/artlav/meteor_decoder)
+
+```
+$ sudo apt-get fpc
+$ git clone https://github.com/artlav/meteor_decoder
+$ cd meteor_decoder
+$ source build_medet.sh
+$ sudo cp medet /usr/bin
 ```
 
 ## Install

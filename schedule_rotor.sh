@@ -2,14 +2,11 @@
 
 cd $WX_GROUND_DIR
 
-DEBUG=true
+SAT=$1
 
-SAT="NOAA 19"
-TLE_FILE=weather.tle
-SERVER="ea4rct.org"
-PORT=4533
-
-#SAT=$1
+TLE_FILE=weather.tle # CANT PUT ABSOLUT PATH, PREDICT BUG, SO MOVE TO $WX_GROUND_DIR FIRST
+SERVER=$WX_GROUND_ROTCTLD_SERVER
+PORT=$WX_GROUND_ROTCTLD_PORT
 
 PREDICT_CMD="/usr/bin/predict -t weather.tle -p \"${SAT}\""
 PREDICTION_END=`/usr/bin/predict -t $TLE_FILE -p "$SAT" | tail -1`
@@ -38,13 +35,10 @@ while [ \"$END_EPOCH_DATE\" = \"`date +%D`\" ] || [ \"$END_EPOCH_DATE\" = \"`dat
           SECONDS_OFFSET=`date --date="TZ=\"UTC\" $TIME" +"%S"`
           ROT_CMD="P ${AZI} ${ELE}"
           TELNET_CMD="echo \"${ROT_CMD}\" | telnet ${SERVER} ${PORT}"
-          COMMAND="sleep \"${SECONDS_OFFSET}\"; ${TELNET_CMD} | at \"${JOB_START}\""
+          COMMAND="sleep \"${SECONDS_OFFSET}\"; ${TELNET_CMD}"
 
-          if $DEBUG; then
-            echo CREATING JOB: $COMMAND at $JOB_START
-          else
-            echo $COMMAND | at ${JOB_START}
-          fi
+          echo CREATING JOB: $COMMAND at $JOB_START
+          echo $COMMAND | at ${JOB_START}
       done < <( eval $PREDICT_CMD )
   fi
 

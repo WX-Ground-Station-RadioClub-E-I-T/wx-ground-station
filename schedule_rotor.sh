@@ -34,7 +34,7 @@ while [ \"$END_EPOCH_DATE\" = \"`date +%D`\" ] || [ \"$END_EPOCH_DATE\" = \"`dat
           JOB_START=`date --date="TZ=\"UTC\" $TIME" +"%H:%M %D"`
           SECONDS_OFFSET=`date --date="TZ=\"UTC\" $TIME" +"%S"`
           ROT_CMD="P ${AZI} ${ELE}"
-          TELNET_CMD="echo \"${ROT_CMD}\" | telnet ${SERVER} ${PORT}"
+          TELNET_CMD="echo \"${ROT_CMD}\" | telnet ${SERVER} ${PORT} &>/dev/null"
           COMMAND="sleep \"${SECONDS_OFFSET}\"; ${TELNET_CMD}"
 
           echo CREATING JOB: $COMMAND at $JOB_START

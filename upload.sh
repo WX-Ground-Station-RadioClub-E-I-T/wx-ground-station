@@ -122,7 +122,7 @@ END_SCRIPT
 
 # Send web hook to IFTTT
 if [[ "$WX_GROUND_IFTTT_WEBHOOK" != "" ]]; then
-  IMAGE_URL="${WX_GROUND_FTP_URL}/${FTP_DIRECTORY}/${SAT_NORM}/${DATE}/${FILEKEY}-MSA.png"
+  IMAGE_URL="${WX_GROUND_FTP_URL}/${FTP_DIRECTORY}/${SAT_NORM}/${DATE}/${FILEKEY}-MCIR.png"
   HUMAN_TIME=`date +%H:%M`
   echo "curl -X POST -H \"Content-Type: application/json\" -d '{\"value1\":\"'\"${SAT}\"'\",\"value2\":\"'\"${HUMAN_TIME}\"'\",\"value3\":\"'\"${IMAGE_URL}\"'\"}' ${WX_GROUND_IFTTT_WEBHOOK}"
   curl -X POST -H "Content-Type: application/json" -d '{"value1":"'"${SAT}"'","value2":"'"${HUMAN_TIME}"'","value3":"'"${IMAGE_URL}"'"}' ${WX_GROUND_IFTTT_WEBHOOK}

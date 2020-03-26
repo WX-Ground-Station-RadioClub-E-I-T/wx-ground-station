@@ -20,7 +20,7 @@ for i in `/usr/bin/atq | /usr/bin/awk '{print $1}'`;do /usr/bin/atrm $i;done
 ${WX_GROUND_DIR}/schedule_satellite.sh "NOAA 19" 137100000 32000 32000 11025
 ${WX_GROUND_DIR}/schedule_satellite.sh "NOAA 18" 137912000 32000 32000 11025
 ${WX_GROUND_DIR}/schedule_satellite.sh "NOAA 15" 137620000 32000 32000 11025
-${WX_GROUND_DIR}/schedule_satellite.sh "METEOR-M 2" 137100000 100000 96000
+${WX_GROUND_DIR}/schedule_satellite.sh "METEOR-M 2" 137100000 96000 96000 96000
 
 #Schedule Rotor Passes:
 ${WX_GROUND_DIR}/schedule_rotor.sh "NOAA 19"

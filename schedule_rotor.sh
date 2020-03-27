@@ -7,6 +7,8 @@ SAT=$1
 TLE_FILE=weather.tle # CANT PUT ABSOLUT PATH, PREDICT BUG, SO MOVE TO $WX_GROUND_DIR FIRST
 SERVER=$WX_GROUND_ROTCTLD_SERVER
 PORT=$WX_GROUND_ROTCTLD_PORT
+LOG_DIR=$WX_GROUND_DIR/logs
+LOGFILE=${LOG_DIR}/${FILEKEY}.log
 
 PREDICT_CMD="/usr/bin/predict -t weather.tle -p \"${SAT}\""
 PREDICTION_END=`/usr/bin/predict -t $TLE_FILE -p "$SAT" | tail -1`
@@ -34,7 +36,7 @@ while [ \"$END_EPOCH_DATE\" = \"`date +%D`\" ] || [ \"$END_EPOCH_DATE\" = \"`dat
           JOB_START=`date --date="TZ=\"UTC\" $TIME" +"%H:%M %D"`
           SECONDS_OFFSET=`date --date="TZ=\"UTC\" $TIME" +"%S"`
           ROT_CMD="P ${AZI} ${ELE}"
-          TELNET_CMD="echo \"${ROT_CMD}\" | telnet ${SERVER} ${PORT} &>/dev/null"
+          TELNET_CMD="echo \"${ROT_CMD}\" | tee -a ${LOGFILE} | telnet ${SERVER} ${PORT} &>/dev/null"
           COMMAND="sleep \"${SECONDS_OFFSET}\"; ${TELNET_CMD}"
 
           echo CREATING JOB: $COMMAND at $JOB_START

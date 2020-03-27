@@ -8,7 +8,7 @@ TLE_FILE=weather.tle # CANT PUT ABSOLUT PATH, PREDICT BUG, SO MOVE TO $WX_GROUND
 SERVER=$WX_GROUND_ROTCTLD_SERVER
 PORT=$WX_GROUND_ROTCTLD_PORT
 LOG_DIR=$WX_GROUND_DIR/logs
-LOGFILE=${LOG_DIR}/${FILEKEY}.log
+LOGFILE=${LOG_DIR}/rotor.log
 
 PREDICT_CMD="/usr/bin/predict -t weather.tle -p \"${SAT}\""
 PREDICTION_END=`/usr/bin/predict -t $TLE_FILE -p "$SAT" | tail -1`

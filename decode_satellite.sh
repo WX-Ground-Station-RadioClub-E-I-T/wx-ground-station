@@ -21,8 +21,8 @@ PassStart=`expr $START_TIME + 90`
 if [[ "$SAT" == "NOAA 19" || "$SAT" == "NOAA 15" || "$SAT" == "NOAA 18" ]]; then
   if [ -e $AUDIO_FILE ]
     then
-      echo "bin/wxmap -T \"${SAT}\" -M $MAXELEV -H $TLE_FILE -b 0 -p 0 -l 0 -o $PassStart ${MAP_FILE}" >>$LOGFILE
-      /usr/local/bin/wxmap -T "${SAT}" -M $MAXELEV -H $TLE_FILE -b 0 -p 0 -l 0 -o $PassStart ${MAP_FILE} >> $LOGFILE 2>&1
+      echo "bin/wxmap -T \"${SAT}\" -M ${MAX_ELEV} -H $TLE_FILE -b 0 -p 0 -l 0 -o $PassStart ${MAP_FILE}" >>$LOGFILE
+      /usr/local/bin/wxmap -T "${SAT}" -M ${MAX_ELEV} -H $TLE_FILE -b 0 -p 0 -l 0 -o $PassStart ${MAP_FILE} >> $LOGFILE 2>&1
 
       echo "/usr/local/bin/wxtoimg -m ${MAP_FILE} -f ${SAMPLERATE} -e ZA $AUDIO_FILE ${IMAGE_DIR}/${FILEKEY}-ZA.png" >> $LOGFILE
       /usr/local/bin/wxtoimg -m ${MAP_FILE} -f ${SAMPLERATE} -e ZA $AUDIO_FILE ${IMAGE_DIR}/${FILEKEY}-ZA.png >> $LOGFILE 2>&1

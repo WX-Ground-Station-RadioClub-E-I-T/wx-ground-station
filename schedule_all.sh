@@ -21,9 +21,3 @@ ${WX_GROUND_DIR}/schedule_satellite.sh "NOAA 19" 137100000 32000 32000 11025
 ${WX_GROUND_DIR}/schedule_satellite.sh "NOAA 18" 137912000 32000 32000 11025
 ${WX_GROUND_DIR}/schedule_satellite.sh "NOAA 15" 137620000 32000 32000 11025
 ${WX_GROUND_DIR}/schedule_satellite.sh "METEOR-M 2" 137100000 96000 96000 96000
-
-#Schedule Rotor Passes:
-${WX_GROUND_DIR}/schedule_rotor.sh "NOAA 19"
-${WX_GROUND_DIR}/schedule_rotor.sh "NOAA 18"
-${WX_GROUND_DIR}/schedule_rotor.sh "NOAA 15"
-${WX_GROUND_DIR}/schedule_rotor.sh "METEOR-M 2"

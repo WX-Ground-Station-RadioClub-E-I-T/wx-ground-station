@@ -23,6 +23,7 @@ $ sudo apt-get install sox
 $ sudo apt-get install at
 $ sudo apt-get install libncurses5-dev libncursesw5-dev
 $ sudo apt-get install imagemagick
+$ sudo apt-get install telnet
 ```
 
 ### Doppler
@@ -44,8 +45,8 @@ Default Predict is not accuare enoght to move the annetas. So we have to change 
 $ git clone https://github.com/kd2bd/predict
 $ cd predict
 $ sed -i 's/25000.0/2000000.0/g' predict.c
-$ sudo ./build.sh
-$ sudo cp predict /usr/bin
+$ sudo ./build
+$ sudo ./configure /usr/bin
 ```
 
 ### Wxtoimg

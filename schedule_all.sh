@@ -17,7 +17,4 @@ for i in `/usr/bin/atq | /usr/bin/awk '{print $1}'`;do /usr/bin/atrm $i;done
 /usr/bin/rm -f ${WX_GROUND_DIR}/upcoming_passes.txt
 
 #Schedule Satellite Passes:
-${WX_GROUND_DIR}/schedule_satellite.sh "NOAA 19" 137100000 32000 32000 11025
-${WX_GROUND_DIR}/schedule_satellite.sh "NOAA 18" 137912000 32000 32000 11025
-${WX_GROUND_DIR}/schedule_satellite.sh "NOAA 15" 137620000 32000 32000 11025
-${WX_GROUND_DIR}/schedule_satellite.sh "METEOR-M 2" 137100000 96000 96000 96000
+${WX_GROUND_DIR}/schedule_satellite.sh

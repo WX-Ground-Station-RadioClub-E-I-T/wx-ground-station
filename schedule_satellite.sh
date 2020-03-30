@@ -1,10 +1,5 @@
 #!/bin/bash
 
-SAT=$1
-FREQ=$2
-BANDWIDTH=$3
-DEVIATION=$4
-OUTPUTSAMPLERATE=$5
 TLE_FILE=${WX_GROUND_DIR}/weather.tle
 
 PROPAGATOR_CMD="python3 ${WX_GROUND_DIR}/predict.py --location ${WX_GROUND_LAT} ${WX_GROUND_LON} ${WX_GROUND_LON} ${TLE_FILE}"
@@ -19,6 +14,27 @@ while IFS= read -r line; do
     JOB_TIMER=`echo $line | awk '{print $5}'`
     MAXELEV=`echo $line | awk '{print $4}'`
 
+    if [[ "$SAT" == "NOAA 19"]]; then
+      FREQ=137100000
+      BANDWIDTH=32000
+      DEVIATION=32000
+      OUTPUTSAMPLERATE=11025
+    elif [[ "$SAT" == "NOAA 18" ]]; then
+      FREQ=137912000
+      BANDWIDTH=32000
+      DEVIATION=32000
+      OUTPUTSAMPLERATE=11025
+    elif [[ "$SAT" == "NOAA 15" ]]; then
+      FREQ=137620000
+      BANDWIDTH=32000
+      DEVIATION=32000
+      OUTPUTSAMPLERATE=11025
+    else    # METEOR-M 2
+      FREQ=137100000
+      BANDWIDTH=96000
+      DEVIATION=96000
+      OUTPUTSAMPLERATE=96000
+    fi
 
     if [ $MAXELEV -ge $WX_GROUND_MAX_ELEV ]; then
       COMMAND="$WX_GROUND_DIR/receive_satellite.sh \"${SAT}\" $FREQ ${FILEKEY} $TLE_FILE $START_EPOCH $JOB_TIMER $MAXELEV $BANDWIDTH $DEVIATION $OUTPUTSAMPLERATE"

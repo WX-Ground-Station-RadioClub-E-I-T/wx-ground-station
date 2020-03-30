@@ -1,5 +1,6 @@
 import math
 import datetime as dt
+from datetime import timezone
 
 class Node:
     def __init__(self, data = None):
@@ -39,7 +40,7 @@ class Node:
         if self.left:
             self.left.PrintTree()
         print('{0} {1} {2} {3} {4}'.format(self.data.aos.strftime("%H:%M %D"), \
-        math.ceil(self.data.aos.timestamp()), math.ceil(self.data.max_elevation_deg), \
+        math.ceil(self.data.aos.replace(tzinfo=timezone.utc).timestamp()), math.ceil(self.data.max_elevation_deg), \
         math.ceil(self.data.duration_s), self.data.sate_id)),
         if self.right:
             self.right.PrintTree()

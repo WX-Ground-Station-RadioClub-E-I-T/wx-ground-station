@@ -14,7 +14,7 @@ while IFS= read -r line; do
     JOB_TIMER=`echo $line | awk '{print $5}'`
     MAXELEV=`echo $line | awk '{print $4}'`
 
-    if [[ "$SAT" == "NOAA 19"]]; then
+    if [[ "$SAT" == "NOAA 19" ]]; then
       FREQ=137100000
       BANDWIDTH=32000
       DEVIATION=32000

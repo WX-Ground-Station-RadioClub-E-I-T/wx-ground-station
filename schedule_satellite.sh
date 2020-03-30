@@ -7,7 +7,7 @@ DEVIATION=$4
 OUTPUTSAMPLERATE=$5
 TLE_FILE=${WX_GROUND_DIR}/weather.tle
 
-PROPAGATOR_CMD="python ${WX_GROUND_DIR}/predict.py --location ${WX_GROUND_LAT} ${WX_GROUND_LON} ${WX_GROUND_LON} ${TLE_FILE}"
+PROPAGATOR_CMD="python3 ${WX_GROUND_DIR}/predict.py --location ${WX_GROUND_LAT} ${WX_GROUND_LON} ${WX_GROUND_LON} ${TLE_FILE}"
 echo $PROPAGATOR_CMD
 
 while IFS= read -r line; do
@@ -23,5 +23,6 @@ while IFS= read -r line; do
     if [ $MAXELEV -ge $WX_GROUND_MAX_ELEV ]; then
       COMMAND="$WX_GROUND_DIR/receive_satellite.sh \"${SAT}\" $FREQ ${FILEKEY} $TLE_FILE $START_EPOCH $JOB_TIMER $MAXELEV $BANDWIDTH $DEVIATION $OUTPUTSAMPLERATE"
       echo CREATING JOB: $COMMAND at $JOB_START
+      echo $COMMAND | at $JOB_START
     fi
 done < <( eval $PROPAGATOR_CMD )

@@ -2,15 +2,17 @@
 
 TLE_FILE=${WX_GROUND_DIR}/weather.tle
 
+NEXT_PASSES=${WX_GROUND_DIR}/upcoming_passes.txt
+
 PROPAGATOR_CMD="python3 ${WX_GROUND_DIR}/predict.py --location ${WX_GROUND_LAT} ${WX_GROUND_LON} ${WX_GROUND_LON} ${TLE_FILE}"
 echo $PROPAGATOR_CMD
 
 while IFS= read -r line; do
-    SAT=`echo $line | awk '{print $6 " " $7}'`
+    `echo ${line} >> ${NEXT_PASSES}`
+    SAT=`echo $line | awk '{print $9 " " $10}'`
     START_EPOCH=`echo $line | awk '{print $3}'`
     JOB_START=`date --date="TZ=\"UTC\" @${START_EPOCH}" "+%H:%M %D"`
-    OUTDATE=`date --date="TZ=\"UTC\" @${START_EPOCH}" +%Y%m%d-%H%M%S -u`
-    FILEKEY="${SAT// /_}-${OUTDATE}"
+    FILEKEY=`echo $line | awk '{print $8}'`
     JOB_TIMER=`echo $line | awk '{print $5}'`
     MAXELEV=`echo $line | awk '{print $4}'`
 

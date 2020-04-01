@@ -1,9 +1,17 @@
 from orbit_predictor.locations import Location
+from orbit_predictor.coordinate_systems import to_horizon
+from orbit_predictor.coordinate_systems import horizon_to_az_elev
 from my_source import MultipleEtcTLESource
 import datetime as dt
 import math
 import tree
 import argparse
+
+pi=math.pi
+
+def degree(x):
+    degree=(x*180)/pi
+    return degree
 
 # Argunment parser
 parser = argparse.ArgumentParser(description='Get satellites predictions of the TLE\'s on tle_file while avoiding overlaping.')
@@ -26,6 +34,30 @@ for sat in source.get_sats():
     while delta.timestamp() < max_delta.timestamp():
         ppass = predictor.get_next_pass(gndlocation, when_utc=delta)
         delta = ppass.aos + dt.timedelta(seconds=1000)
-        passes.insert(ppass)
+        passes.insert(ppass, predictor)
 
-passes.PrintTree()
+for i in passes.getNodes():
+    # We need to put azi and ele on aos and los
+    # First get horizon of the satelite in aos and los
+    sat_horizon_aos = to_horizon(gndlocation.latitude_rad, \
+                gndlocation.longitude_rad, gndlocation.position_ecef, \
+                i.predictor.get_position(i.data.aos).position_ecef)
+
+    sat_horizon_los = to_horizon(gndlocation.latitude_rad, \
+                gndlocation.longitude_rad, gndlocation.position_ecef, \
+                i.predictor.get_position(i.data.los).position_ecef)
+
+    # Get azi on aos and los
+    az_aos = horizon_to_az_elev(sat_horizon_aos[0], sat_horizon_aos[1], sat_horizon_aos[2])[0]
+    az_los = horizon_to_az_elev(sat_horizon_los[0], sat_horizon_los[1], sat_horizon_los[2])[0]
+
+    # Create unique filekey
+    satname_splitted = i.data.sate_id.split() # There are innesesary spaces
+    satnorm = satname_splitted[0] + "_" + satname_splitted[1]
+    satname = satname_splitted[0] + " " + satname_splitted[1]
+    outdate = i.data.aos.strftime("%Y%m%d-%H%M%S")
+    filekey =  satnorm + "-" + outdate
+
+    print('{0} {1} {2} {3} {5:.2f} {6:.2f} {7} {4}'.format(i.data.aos.strftime("%H:%M %D"), \
+    math.ceil(i.data.aos.timestamp()), math.ceil(i.data.max_elevation_deg), \
+    math.ceil(i.data.duration_s), satname, degree(az_aos), degree(az_los), filekey))

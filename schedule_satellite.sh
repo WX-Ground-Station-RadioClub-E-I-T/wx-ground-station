@@ -8,7 +8,7 @@ PROPAGATOR_CMD="python3 ${WX_GROUND_DIR}/predict.py --location ${WX_GROUND_LAT} 
 echo $PROPAGATOR_CMD
 
 while IFS= read -r line; do
-    SAT=`echo $line | awk '{print $9 " " $10}'`
+    SAT=`echo $line | awk '{print $10 " " $11}'`
     START_EPOCH=`echo $line | awk '{print $3}'`
     JOB_START=`date --date="TZ=\"UTC\" @${START_EPOCH}" "+%H:%M %D"`
     FILEKEY=`echo $line | awk '{print $8}'`
@@ -39,7 +39,7 @@ while IFS= read -r line; do
 
     if [ $MAXELEV -ge $WX_GROUND_MAX_ELEV ]; then
       echo ${line} >> ${NEXT_PASSES}
-      COMMAND="$WX_GROUND_DIR/receive_satellite.sh \"${SAT}\" $FREQ ${FILEKEY} $TLE_FILE $START_EPOCH $JOB_TIMER $MAXELEV $BANDWIDTH $DEVIATION $OUTPUTSAMPLERATE"
+      COMMAND="$WX_GROUND_DIR/receive_satellite.sh \"${SAT}\" $FREQ ${FILEKEY} $TLE_FILE $START_EPOCH $JOB_TIMER $BANDWIDTH $DEVIATION $OUTPUTSAMPLERATE"
       echo CREATING JOB: $COMMAND at $JOB_START
       echo $COMMAND | at $JOB_START
     fi

@@ -58,6 +58,9 @@ for i in passes.getNodes():
     outdate = i.data.aos.strftime("%Y%m%d-%H%M%S")
     filekey =  satnorm + "-" + outdate
 
-    print('{0} {1} {2} {3} {5:.2f} {6:.2f} {7} {4}'.format(i.data.aos.strftime("%H:%M %D"), \
+    # Get NORAD ID
+    norad_id = source.getNoradId(satname=i.data.sate_id)
+
+    print('{0} {1} {2} {3} {5:.2f} {6:.2f} {7} {8} {4}'.format(i.data.aos.strftime("%H:%M %D"), \
     math.ceil(i.data.aos.timestamp()), math.ceil(i.data.max_elevation_deg), \
-    math.ceil(i.data.duration_s), satname, degree(az_aos), degree(az_los), filekey))
+    math.ceil(i.data.duration_s), satname, degree(az_aos), degree(az_los), filekey, norad_id))

@@ -21,3 +21,14 @@ class MultipleEtcTLESource(TLESource):
                 if tle[0] != '':
                     sats.append(tle[0])
             return sats
+
+    def getNoradId(self, satname):
+        norad_id = ""
+        with open(self.filename) as fd:
+            data = fd.read().split("\n")
+            tle_lines = [data[i:i+3] for i in range(0, len(data), 3)]
+            for tle in tle_lines:
+                if tle[0] == satname:
+                    col = tle[2].split()
+                    return col[1]
+            return sats

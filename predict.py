@@ -6,6 +6,7 @@ import datetime as dt
 import math
 import tree
 import argparse
+from datetime import timezone
 
 pi=math.pi
 
@@ -62,5 +63,5 @@ for i in passes.getNodes():
     norad_id = source.getNoradId(satname=i.data.sate_id)
 
     print('{0} {1} {2} {3} {5:.2f} {6:.2f} {7} {8} {4}'.format(i.data.aos.strftime("%H:%M %D"), \
-    math.ceil(i.data.aos.timestamp()), math.ceil(i.data.max_elevation_deg), \
+    math.ceil(i.data.aos.replace(tzinfo=timezone.utc).timestamp()), math.ceil(i.data.max_elevation_deg), \
     math.ceil(i.data.duration_s), satname, degree(az_aos), degree(az_los), filekey, norad_id))

@@ -84,6 +84,8 @@ HOST=$WX_GROUND_FTP_SERVER
 USER=$WX_GROUND_FTP_USER
 PASSWD=$WX_GROUND_FTP_PASS
 
+# Upload to FTP
+
 ftp -n $HOST <<END_SCRIPT
 quote USER $USER
 quote PASS $PASSWD
@@ -119,6 +121,49 @@ put $HVCT_FILE_DIR $HVCT_FILE
 put $SEA_FILE_DIR $SEA_FILE
 quit
 END_SCRIPT
+
+# Upload to mysql database
+
+# Get data from upcoming_passes.txt
+NEXT_PASSES=${WX_GROUND_DIR}/upcoming_passes.txt
+PASS_DATA=`grep ${FILEKEY} ${NEXT_PASSES}`
+
+
+DB_PATH=${WX_GROUND_FTP_URL}/${FTP_DIRECTORY}
+DB_STATION_ID=1
+DB_DATE_OBS=`date --date="TZ=\"UTC\" @${START_TIME}" +"%Y-%m-%d %H:%M:%S" -u`
+
+#INSERT INTO `archive-images`(`PATH`, `FILEKEY`, `DATE_OBS`, `STATION_ID`) VALUES ("", "", "2020-03-31 19:24:50", 1)
+
+## Insert into archive-images
+DB_INS_IMG_QUERY="INSERT INTO `archive-images`(`PATH`, `FILEKEY`, `DATE_OBS`, `STATION_ID`) VALUES (\"${DB_PATH}\", \"${FILEKEY}\", \"${DB_DATE_OBS}\", ${DB_STATION_ID}); SELECT LAST_INSERT_ID();"
+
+DB_IMG_ID=""
+
+DB_NORAD_ID=`echo ${PASS_DATA} | awk '{ print $9 }'`
+DB_TLE=`/usr/bin/grep "${SAT}" ${WX_GROUND_DIR}/weather.tle -A 2 | tail -2`
+DB_AZI_RISE=`echo ${PASS_DATA} | awk '{ print $6 }'`
+DB_AZI_SET=`echo ${PASS_DATA} | awk '{ print $7 }'`
+DB_END_EPOCH=`expr ${START_TIME} + ${DURATION}`
+
+## Insert metada
+INSERT INTO `archive-images-metadata`(`IMAGE_ID`, `METADATA_ID`, `VALUE`) VALUES (${DB_IMG_ID},1,\"${SAT}\")
+INSERT INTO `archive-images-metadata`(`IMAGE_ID`, `METADATA_ID`, `VALUE`) VALUES (${DB_IMG_ID},2,\"${DB_NORAD_ID}\")
+INSERT INTO `archive-images-metadata`(`IMAGE_ID`, `METADATA_ID`, `VALUE`) VALUES (${DB_IMG_ID},3,\"${FREQ}\")
+INSERT INTO `archive-images-metadata`(`IMAGE_ID`, `METADATA_ID`, `VALUE`) VALUES (${DB_IMG_ID},4,\"APT\")
+INSERT INTO `archive-images-metadata`(`IMAGE_ID`, `METADATA_ID`, `VALUE`) VALUES (${DB_IMG_ID},5,\"${BANDWIDTH}\")
+INSERT INTO `archive-images-metadata`(`IMAGE_ID`, `METADATA_ID`, `VALUE`) VALUES (${DB_IMG_ID},6,\"${DEVIATION}\")
+INSERT INTO `archive-images-metadata`(`IMAGE_ID`, `METADATA_ID`, `VALUE`) VALUES (${DB_IMG_ID},7,\"APT\")
+INSERT INTO `archive-images-metadata`(`IMAGE_ID`, `METADATA_ID`, `VALUE`) VALUES (${DB_IMG_ID},8,\"${DB_TLE}\")
+INSERT INTO `archive-images-metadata`(`IMAGE_ID`, `METADATA_ID`, `VALUE`) VALUES (${DB_IMG_ID},9,\"${DB_DATE_OBS}\")
+INSERT INTO `archive-images-metadata`(`IMAGE_ID`, `METADATA_ID`, `VALUE`) VALUES (${DB_IMG_ID},10,\"${DB_AZI_RISE}\")
+INSERT INTO `archive-images-metadata`(`IMAGE_ID`, `METADATA_ID`, `VALUE`) VALUES (${DB_IMG_ID},11,\"${DB_AZI_SET}\")
+INSERT INTO `archive-images-metadata`(`IMAGE_ID`, `METADATA_ID`, `VALUE`) VALUES (${DB_IMG_ID},12,\"${START_TIME}\")
+INSERT INTO `archive-images-metadata`(`IMAGE_ID`, `METADATA_ID`, `VALUE`) VALUES (${DB_IMG_ID},13,\"${DB_END_EPOCH}\")
+INSERT INTO `archive-images-metadata`(`IMAGE_ID`, `METADATA_ID`, `VALUE`) VALUES (${DB_IMG_ID},14,\"${DURATION}\")
+INSERT INTO `archive-images-metadata`(`IMAGE_ID`, `METADATA_ID`, `VALUE`) VALUES (${DB_IMG_ID},15,\"${ELEVATION}\")
+INSERT INTO `archive-images-metadata`(`IMAGE_ID`, `METADATA_ID`, `VALUE`) VALUES (${DB_IMG_ID},17,\"wxtoimg V2.10.11\")
+
 
 # Send web hook to IFTTT
 if [[ "$WX_GROUND_IFTTT_WEBHOOK" != "" ]]; then

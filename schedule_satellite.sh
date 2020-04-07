@@ -36,9 +36,6 @@ while IFS= read -r line; do
     else    # METEOR-M 2
       FREQ=137100000
       SAMPLERATE=192000 # Must match with the sample rate on spyserver and decimation. Mine is 384K with 2 decimation (384000 / 2 = 192000)
-      BANDWIDTH=96000
-      DEVIATION=96000
-      OUTPUTSAMPLERATE=96000
     fi
 
     if [ $MAXELEV -ge $WX_GROUND_MAX_ELEV ]; then

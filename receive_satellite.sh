@@ -25,6 +25,7 @@ AUDIO_DIR=$WX_GROUND_DIR/audio
 LOG_DIR=$WX_GROUND_DIR/logs
 IQ_FILE=${AUDIO_DIR}/${FILEKEY}.iq
 AUDIO_FILE=${AUDIO_DIR}/${FILEKEY}.wav
+QPSK_FILE=${AUDIO_DIR}/${FILEKEY}.qpsk
 LOGFILE=${LOG_DIR}/${FILEKEY}.log
 
 echo $@ >> $LOGFILE
@@ -37,7 +38,20 @@ if [[ "$SAT" == "NOAA 19" || "$SAT" == "NOAA 15" || "$SAT" == "NOAA 18" ]]; then
   echo "$WX_GROUND_DIR/decode_satellite.sh \"${SAT}\" ${AUDIO_FILE} ${TLE_FILE} ${START_TIME}" 2>> $LOGFILE
   $WX_GROUND_DIR/decode_satellite.sh "${SAT}" "${FILEKEY}" ${TLE_FILE} ${START_TIME} ${OUTPUTSAMPLERATE}
 elif [[ "$SAT" == "METEOR-M 2" ]]; then
-  echo "/usr/bin/timeout $DURATION /usr/bin/ss_client iq -r ${SERVER} -q ${PORT} -f ${FREQ} -s ${SAMPLERATE} 2>> $LOGFILE | /usr/local/bin/rotor --tlefile ${TLE_FILE} --tlename \"${SAT}\" --location lat=${RX_LAT},lon=${RX_LON},alt=${RX_ALT} --server ${ROTCTLD_SERVER} --port ${ROTCTLD_PORT} 2>> $LOGFILE | /usr/bin/tee ${IQ_FILE} | /usr/bin/sox -t raw -e signed-integer -r ${SAMPLERATE} -b 16 -c 1 -V1 - ${AUDIO_FILE} rate ${OUTPUTSAMPLERATE}" >> $LOGFILE
+  echo "/usr/bin/timeout $DURATION /usr/bin/ss_client iq -r ${SERVER} -q ${PORT} -f ${FREQ} -s ${SAMPLERATE} 2>> $LOGFILE | /usr/local/bin/rotor --tlefile ${TLE_FILE} --tlename \"${SAT}\" --location lat=${RX_LAT},lon=${RX_LON},alt=${RX_ALT} --server ${ROTCTLD_SERVER} --port ${ROTCTLD_PORT} 2>> $LOGFILE >> ${IQ_FILE}" >> $LOGFILE
 
-  /usr/bin/timeout $DURATION /usr/bin/ss_client iq -r ${SERVER} -q ${PORT} -f ${FREQ} -s ${SAMPLERATE} 2>> $LOGFILE | /usr/local/bin/rotor --tlefile ${TLE_FILE} --tlename "${SAT}" --location lat=${RX_LAT},lon=${RX_LON},alt=${RX_ALT} --server ${ROTCTLD_SERVER} --port ${ROTCTLD_PORT} 2>> $LOGFILE | /usr/bin/tee ${IQ_FILE} | /usr/bin/sox -t raw -e signed-integer -r ${SAMPLERATE} -b 16 -c 1 -V1 - ${AUDIO_FILE} rate ${OUTPUTSAMPLERATE}
+  /usr/bin/timeout $DURATION /usr/bin/ss_client iq -r ${SERVER} -q ${PORT} -f ${FREQ} -s ${SAMPLERATE} 2>> $LOGFILE | /usr/local/bin/rotor --tlefile ${TLE_FILE} --tlename "${SAT}" --location lat=${RX_LAT},lon=${RX_LON},alt=${RX_ALT} --server ${ROTCTLD_SERVER} --port ${ROTCTLD_PORT} 2>> $LOGFILE >> ${IQ_FILE}
+
+  if [ `wc -c <${IQ_FILE}` -le 1000000 ]; then
+      echo "Audio file ${IQ_FILE} too small, probably wrong recording" 2>> $LOGFILE
+      exit
+  fi
+
+  echo "NORMALIZE IQ" >> $LOGFILE
+  sox -t raw -e signed-integer -r ${SAMPLERATE} -b 16 -c 2 -V1 ${IQ_FILE} ${AUDIO_FILE} gain -n rate ${SAMPLERATE}
+
+  echo "DEMODULATION QPSK"  >> $LOGFILE
+  yes | meteor_demod -B -m qpsk -s ${SAMPLERATE} -o ${QPSK_FILE} ${AUDIO_FILE} 2>> $LOGFILE
+
+  touch -r ${AUDIO_FILE} ${QPSK_FILE}
 fi

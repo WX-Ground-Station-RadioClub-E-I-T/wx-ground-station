@@ -98,17 +98,17 @@ if [[ "$SAT" == "METEOR-M 2" ]]; then
   QPSK_FILE=${AUDIO_DIR}/${FILEKEY}.qpsk
 
   # Decode
-  medet ${QPSK_FILE} ${AUDIO_FILE_BASE} -cd -q
+  medet ${QPSK_FILE} ${AUDIO_FILE_BASE} -cd -q 2>> $LOGFILE
 
-  touch -r ${QPSK_FILE} ${AUDIO_FILE_BASE}.dec
+  touch -r ${QPSK_FILE} ${AUDIO_FILE_BASE}.dec 2>> $LOGFILE
 
   # Create image:
   # composite only
-  medet ${AUDIO_FILE_BASE}.dec ${AUDIO_FILE_BASE} -r 65 -g 65 -b 64 -d -q
+  medet ${AUDIO_FILE_BASE}.dec ${AUDIO_FILE_BASE} -r 65 -g 65 -b 64 -d -q 2>> $LOGFILE
   # three channels
   #medet ${AUDIO_FILE_BASE}.dec ${AUDIO_FILE_BASE} -S -r 65 -g 65 -b 64 -d -q
   # IR
-  medet ${AUDIO_FILE_BASE}.dec ${AUDIO_FILE_BASE}_IR -r 68 -g 68 -b 68 -d -q
+  medet ${AUDIO_FILE_BASE}.dec ${AUDIO_FILE_BASE}_IR -r 68 -g 68 -b 68 -d -q 2>> $LOGFILE
 
   if [[ -f "${AUDIO_FILE_BASE}.bmp" ]]; then
     convert ${AUDIO_FILE_BASE}.bmp ${IMAGE_DIR}/${FILEKEY}.png &> /dev/null

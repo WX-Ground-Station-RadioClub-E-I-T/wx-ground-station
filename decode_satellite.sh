@@ -23,8 +23,6 @@ echo $SAMPLERATE
 
 PassStart=`expr $START_TIME + 90`
 
-echo "a"
-
 if [[ "$SAT" == "NOAA 19" || "$SAT" == "NOAA 15" || "$SAT" == "NOAA 18" ]]; then
   if [ -e $AUDIO_FILE ]
     then
@@ -64,21 +62,12 @@ if [[ "$SAT" == "METEOR-M 2" ]]; then
   sox ${AUDIO_FILE} ${AUDIO_FILE_NORM} gain -n
 
   # Demodulate:
-  if [[ ${FILEKEY: -2} == "M2" ]]; then
-      yes | meteor_demod -B -m qpsk  -o ${AUDIO_FILE_DEMOD} ${AUDIO_FILE_NORM}
-  else
-      yes | meteor_demod -B -b 50 -m oqpsk -o ${AUDIO_FILE_DEMOD} ${AUDIO_FILE_NORM}
-  fi
-  touch -r ${AUDIO_FILE} ${AUDIO_FILE_DEMOD}
+  yes | meteor_demod -B -m qpsk -o ${AUDIO_FILE_DEMOD} ${AUDIO_FILE_NORM}
 
+  touch -r ${AUDIO_FILE_NORM} ${AUDIO_FILE_DEMOD}
 
-  ## MIRAR LO SIGUIENTEEEE SI PUEDO PONER EL DEC
-  # Decode:
-  if [[ ${FILEKEY: -2} == "M2" ]]; then
-      medet ${AUDIO_FILE_DEMOD} ${AUDIO_FILE_BASE} -cd -q
-  else
-      medet ${AUDIO_FILE_DEMOD} ${AUDIO_FILE_BASE} -diff -cd -q  # -int for 80KHz ??
-  fi
+  medet ${AUDIO_FILE_DEMOD} ${AUDIO_FILE_BASE} -cd -q
+
   touch -r ${AUDIO_FILE} ${AUDIO_FILE_BASE}.dec
 
   # Create image:
@@ -117,10 +106,8 @@ if [[ "$SAT" == "METEOR-M 2" ]]; then
     fi
   fi
 
-
   rm -f ${AUDIO_FILE_NORM}
-  rm -f ${AUDIO_FILE_DEMOD}
-  rm -f ${AUDIO_FILE_BASE}.dec
 
-  upload.sh "${SAT}" ${FILEKEY}
+  echo "upload.sh \"${SAT}\" ${FILEKEY}" >> $LOGFILE 2>&1s
+  upload.sh "${SAT}" ${FILEKEY} >> $LOGFILE 2>&1
 fi

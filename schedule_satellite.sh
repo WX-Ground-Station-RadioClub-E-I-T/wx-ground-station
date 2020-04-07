@@ -17,21 +17,25 @@ while IFS= read -r line; do
 
     if [[ "$SAT" == "NOAA 19" ]]; then
       FREQ=137100000
+      SAMPLERATE=96000 # Must match with the sample rate on spyserver and decimation. Mine is 384K with 2 decimation (384000 / 4 = 96000)
       BANDWIDTH=32000
       DEVIATION=32000
       OUTPUTSAMPLERATE=11025
     elif [[ "$SAT" == "NOAA 18" ]]; then
       FREQ=137912000
+      SAMPLERATE=96000
       BANDWIDTH=32000
       DEVIATION=32000
       OUTPUTSAMPLERATE=11025
     elif [[ "$SAT" == "NOAA 15" ]]; then
       FREQ=137620000
+      SAMPLERATE=96000
       BANDWIDTH=32000
       DEVIATION=32000
       OUTPUTSAMPLERATE=11025
     else    # METEOR-M 2
       FREQ=137100000
+      SAMPLERATE=192000 # Must match with the sample rate on spyserver and decimation. Mine is 384K with 2 decimation (384000 / 2 = 192000)
       BANDWIDTH=96000
       DEVIATION=96000
       OUTPUTSAMPLERATE=96000
@@ -39,7 +43,7 @@ while IFS= read -r line; do
 
     if [ $MAXELEV -ge $WX_GROUND_MAX_ELEV ]; then
       echo ${line} >> ${NEXT_PASSES}
-      COMMAND="$WX_GROUND_DIR/receive_satellite.sh \"${SAT}\" $FREQ ${FILEKEY} $TLE_FILE $START_EPOCH $JOB_TIMER $BANDWIDTH $DEVIATION $OUTPUTSAMPLERATE"
+      COMMAND="$WX_GROUND_DIR/receive_satellite.sh \"${SAT}\" $FREQ $SAMPLERATE ${FILEKEY} $TLE_FILE $START_EPOCH $JOB_TIMER $BANDWIDTH $DEVIATION $OUTPUTSAMPLERATE"
       echo CREATING JOB: $COMMAND at $JOB_START
       echo $COMMAND | at $JOB_START
     fi

@@ -15,6 +15,11 @@ then
     mkdir logs
 fi
 
+if [ ! -d "draft" ]
+then
+    mkdir draft
+fi
+
 chmod +x schedule_all.sh
 chmod +x schedule_satellite.sh
 chmod +x schedule_rotor.sh

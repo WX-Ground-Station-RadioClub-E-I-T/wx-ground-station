@@ -138,6 +138,6 @@ if [[ "$SAT" == "METEOR-M 2" ]]; then
     fi
   fi
 
-  echo "upload.sh \"${SAT}\" ${FILEKEY}" >> $LOGFILE 2>&1
-  upload.sh "${SAT}" ${FILEKEY} >> $LOGFILE 2>&1
+  echo "$WX_GROUND_DIR/upload.sh \"${SAT}\" ${FILEKEY}" >> $LOGFILE 2>&1
+  $WX_GROUND_DIR/upload.sh "${SAT}" ${FILEKEY} >> $LOGFILE 2>&1
 fi

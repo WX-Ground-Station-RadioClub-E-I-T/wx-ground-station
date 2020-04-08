@@ -22,7 +22,6 @@ fi
 
 chmod +x schedule_all.sh
 chmod +x schedule_satellite.sh
-chmod +x schedule_rotor.sh
 chmod +x upload.sh
 chmod +x decode_satellite.sh
 chmod +x receive_satellite.sh

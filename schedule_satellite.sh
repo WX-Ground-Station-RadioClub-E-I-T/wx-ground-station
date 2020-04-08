@@ -3,8 +3,9 @@
 TLE_FILE=${WX_GROUND_DIR}/weather.tle
 
 NEXT_PASSES=${WX_GROUND_DIR}/upcoming_passes.txt
+SCRIPTS_DIR=${WX_GROUND_DIR}/scripts
 
-PROPAGATOR_CMD="python3 ${WX_GROUND_DIR}/predict.py --location ${WX_GROUND_LAT} ${WX_GROUND_LON} ${WX_GROUND_LON} ${TLE_FILE}"
+PROPAGATOR_CMD="python3 ${SCRIPTS_DIR}/predict.py --location ${WX_GROUND_LAT} ${WX_GROUND_LON} ${WX_GROUND_LON} ${TLE_FILE}"
 echo $PROPAGATOR_CMD
 
 while IFS= read -r line; do

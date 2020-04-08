@@ -16,11 +16,10 @@ LOGFILE=${LOG_DIR}/${FILEKEY}.log
 
 echo $@ >> $LOGFILE
 
-PassStart=`expr $START_TIME + 90`
-
 if [[ "$SAT" == "NOAA 19" || "$SAT" == "NOAA 15" || "$SAT" == "NOAA 18" ]]; then
   if [ -e $AUDIO_FILE ]
     then
+      PassStart=`expr $START_TIME + 90`
       MAP_FILE=${IMAGE_DIR}/${FILEKEY}-map.png
 
       echo "bin/wxmap -T \"${SAT}\" -M ${MAX_ELEV} -H $TLE_FILE -b 0 -p 0 -l 0 -o $PassStart ${MAP_FILE}" >>$LOGFILE
@@ -86,7 +85,7 @@ if [[ "$SAT" == "NOAA 19" || "$SAT" == "NOAA 15" || "$SAT" == "NOAA 18" ]]; then
       echo "/usr/local/bin/wxtoimg -m ${MAP_FILE} -f ${SAMPLERATE} -e sea $AUDIO_FILE ${IMAGE_DIR}/${FILEKEY}-sea.png" >> $LOGFILE
       /usr/local/bin/wxtoimg -m ${MAP_FILE} -f ${SAMPLERATE} -e sea $AUDIO_FILE ${IMAGE_DIR}/${FILEKEY}-sea.png >> $LOGFILE 2>&1
 
-      echo "$WX_GROUND_DIR/upload.sh \"${SAT}\" ${FILEKEY}" >> $LOGFILE 2>&1
+      echo "$WX_GROUND_DIR/upload.sh \"${SAT}\" ${FILEKEY}" >> $LOGFILE
       $WX_GROUND_DIR/upload.sh "${SAT}" ${FILEKEY} >> $LOGFILE 2>&1
   else
     echo "NO AUDIO FILE" >>$LOGFILE
@@ -98,17 +97,17 @@ if [[ "$SAT" == "METEOR-M 2" ]]; then
   QPSK_FILE=${AUDIO_DIR}/${FILEKEY}.qpsk
 
   # Decode
-  medet ${QPSK_FILE} ${AUDIO_FILE_BASE} -cd -q 2>> $LOGFILE
+  medet ${QPSK_FILE} ${AUDIO_FILE_BASE} -cd -q >> $LOGFILE 2>&1
 
-  touch -r ${QPSK_FILE} ${AUDIO_FILE_BASE}.dec 2>> $LOGFILE
+  touch -r ${QPSK_FILE} ${AUDIO_FILE_BASE}.dec >> $LOGFILE 2>&1
 
   # Create image:
   # composite only
-  medet ${AUDIO_FILE_BASE}.dec ${AUDIO_FILE_BASE} -r 65 -g 65 -b 64 -d -q 2>> $LOGFILE
+  medet ${AUDIO_FILE_BASE}.dec ${AUDIO_FILE_BASE} -r 65 -g 65 -b 64 -d -q >> $LOGFILE 2>&1
   # three channels
   #medet ${AUDIO_FILE_BASE}.dec ${AUDIO_FILE_BASE} -S -r 65 -g 65 -b 64 -d -q
   # IR
-  medet ${AUDIO_FILE_BASE}.dec ${AUDIO_FILE_BASE}_IR -r 68 -g 68 -b 68 -d -q 2>> $LOGFILE
+  medet ${AUDIO_FILE_BASE}.dec ${AUDIO_FILE_BASE}_IR -r 68 -g 68 -b 68 -d -q >> $LOGFILE 2>&1
 
   if [[ -f "${AUDIO_FILE_BASE}.bmp" ]]; then
     convert ${AUDIO_FILE_BASE}.bmp ${IMAGE_DIR}/${FILEKEY}.png &> /dev/null
@@ -117,10 +116,10 @@ if [[ "$SAT" == "METEOR-M 2" ]]; then
     # check brightness
     brightness=`convert ${IMAGE_DIR}/${FILEKEY}.png -colorspace Gray -format "%[fx:image.mean]" info:`
     if (( $(echo "$brightness > 0.09" |bc -l) )); then
-      echo -e "\nComposite image created!" 2>> $LOGFILE
+      echo -e "\nComposite image created!" >> $LOGFILE
     else
       mv ${IMAGE_DIR}/${FILEKEY}.png ${DRAFT_DIR}
-      echo -e "\nComposite image too dark, probably bad quality." 2>> $LOGFILE
+      echo -e "\nComposite image too dark, probably bad quality." >> $LOGFILE
     fi
   fi
 
@@ -131,13 +130,13 @@ if [[ "$SAT" == "METEOR-M 2" ]]; then
     # check brightness
     brightness=`convert ${IMAGE_DIR}/${FILEKEY}_IR.png -negate -colorspace Gray -format "%[fx:image.mean]" info:`
     if (( $(echo "$brightness > 0.09" |bc -l) )); then
-      echo -e "\nIR image created!" 2>> $LOGFILE
+      echo -e "\nIR image created!" >> $LOGFILE
     else
       mv ${IMAGE_DIR}/${FILEKEY}_IR.png ${DRAFT_DIR}
-      echo -e "\nIR image too dark, probably bad quality." 2>> $LOGFILE
+      echo -e "\nIR image too dark, probably bad quality." >> $LOGFILE
     fi
   fi
 
-  echo "$WX_GROUND_DIR/upload.sh \"${SAT}\" ${FILEKEY}" >> $LOGFILE 2>&1
+  echo "$WX_GROUND_DIR/upload.sh \"${SAT}\" ${FILEKEY}" >> $LOGFILE
   $WX_GROUND_DIR/upload.sh "${SAT}" ${FILEKEY} >> $LOGFILE 2>&1
 fi

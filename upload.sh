@@ -213,6 +213,7 @@ PASS_DATA=`grep ${FILEKEY} ${NEXT_PASSES}`
 
 DB_PATH=${WX_GROUND_FTP_URL}/${FTP_DIRECTORY}
 DB_STATION_ID=1
+START_TIME=`echo ${PASS_DATA} | awk '{ print $3 }'`
 DB_DATE_OBS=`date --date="TZ=\"UTC\" @${START_TIME}" "+%Y-%m-%d %H:%M:%S" -u`
 
 ## Insert into archive-images query
@@ -223,6 +224,7 @@ INSERT_OUTPUT=`eval ${MYSQL_CMD}<<<"${DB_INS_IMG_QUERY}"`
 
 IMAGE_ID=`echo ${INSERT_OUTPUT} | awk '{print $2}'` # Get ID from insert query
 DB_NORAD_ID=`echo ${PASS_DATA} | awk '{ print $9 }'`
+DURATION=`echo ${PASS_DATA} | awk '{ print $5 }'`
 DB_TLE=`/usr/bin/grep "${SAT}" ${WX_GROUND_DIR}/weather.tle -A 2 | tail -2`
 DB_AZI_RISE=`echo ${PASS_DATA} | awk '{ print $6 }'`
 DB_AZI_SET=`echo ${PASS_DATA} | awk '{ print $7 }'`

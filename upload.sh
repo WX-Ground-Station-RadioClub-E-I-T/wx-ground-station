@@ -211,7 +211,7 @@ fi
 NEXT_PASSES=${WX_GROUND_DIR}/upcoming_passes.txt
 PASS_DATA=`grep ${FILEKEY} ${NEXT_PASSES}`
 
-DB_PATH=${WX_GROUND_FTP_URL}/${FTP_DIRECTORY}
+DB_PATH="${SAT_NORM}/${DATE}/"
 DB_STATION_ID=1
 START_TIME=`echo ${PASS_DATA} | awk '{ print $3 }'`
 DB_DATE_OBS=`date --date="TZ=\"UTC\" @${START_TIME}" "+%Y-%m-%d %H:%M:%S" -u`

@@ -213,7 +213,7 @@ PASS_DATA=`grep ${FILEKEY} ${NEXT_PASSES}`
 
 DB_PATH=${WX_GROUND_FTP_URL}/${FTP_DIRECTORY}
 DB_STATION_ID=1
-DB_DATE_OBS=`date --date="TZ=\"UTC\" @${START_TIME}" +"%Y-%m-%d %H:%M:%S" -u`
+DB_DATE_OBS=`date --date="TZ=\"UTC\" @${START_TIME}" "+%Y-%m-%d %H:%M:%S" -u`
 
 ## Insert into archive-images query
 MYSQL_CMD="mysql ${DB_DATABASE} -h ${DB_HOST} -u ${DB_USER} -p${DB_PASS}"
@@ -234,26 +234,26 @@ if [[ "$SAT" == "NOAA 19" || "$SAT" == "NOAA 15" || "$SAT" == "NOAA 18" ]]; then
   case "$SAT" in
 
     "NOAA 19")
-      FREQ=137.1
+      FREQ="137.1"
       ;;
     "NOAA 18")
-      FREQ=137.912
+      FREQ="137.912"
       ;;
     "NOAA 15")
-      FREQ=137.62
+      FREQ="137.62"
       ;;
   esac
 
-  BANDWIDTH=32000
-  DEVIATION=32000
+  BANDWIDTH="32000"
+  DEVIATION="32000"
   TRANSPONDER="APT"
   CODIFICATION="APT"
   DECOD_SOFTWARE="wxtoimg V2.10.11"
 fi
 
 if [[ "$SAT" == "METEOR-M 2" ]]; then
-  FREQ=137.1
-  BANDWIDTH=90000
+  FREQ="137.1"
+  BANDWIDTH="90000"
   DEVIATION="NaN"
   TRANSPONDER="LRPT 1"
   CODIFICATION="LRPT"
@@ -261,19 +261,19 @@ if [[ "$SAT" == "METEOR-M 2" ]]; then
 fi
 
 # Insert into archive-images-metadata
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID},1,\"${SAT}\")"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID},2,\"${DB_NORAD_ID}\")"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID},3,\"${FREQ}\")"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID},4,\"${TRANSPONDER}\")"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID},5,\"${BANDWIDTH}\")"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID},6,\"${DEVIATION}\")"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID},7,\"${CODIFICATION}\")"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID},8,\"${DB_TLE}\")"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID},9,\"${DB_DATE_OBS}\")"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID},10,\"${DB_AZI_RISE}\")"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID},11,\"${DB_AZI_SET}\")"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID},12,\"${START_TIME}\")"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID},13,\"${DB_END_EPOCH}\")"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID},14,\"${DURATION}\")"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID},15,\"${ELEVATION}\")"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID},17,\"${DECOD_SOFTWARE}\")"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 1, \"${SAT}\" )"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 2, \"${DB_NORAD_ID}\" )"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 3, \"${FREQ}\" )"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 4, \"${TRANSPONDER}\" )"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 5, \"${BANDWIDTH}\" )"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 6, \"${DEVIATION}\" )"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 7, \"${CODIFICATION}\" )"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 8, \"${DB_TLE}\" )"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 9, \"${DB_DATE_OBS}\" )"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 10, \"${DB_AZI_RISE}\" )"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 11, \"${DB_AZI_SET}\" )"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 12, \"${START_TIME}\" )"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 13, \"${DB_END_EPOCH}\" )"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 14, \"${DURATION}\" )"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 15, \"${ELEVATION}\" )"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 17, \"${DECOD_SOFTWARE}\" )"

@@ -230,6 +230,7 @@ DB_AZI_RISE=`echo ${PASS_DATA} | awk '{ print $6 }'`
 DB_AZI_SET=`echo ${PASS_DATA} | awk '{ print $7 }'`
 DB_END_EPOCH=`expr ${START_TIME} + ${DURATION}`
 ELEVATION=`echo ${PASS_DATA} | awk '{ print $4 }'`
+DB_RADIO="Airspy HF+ Discovery"
 
 
 if [[ "$SAT" == "NOAA 19" || "$SAT" == "NOAA 15" || "$SAT" == "NOAA 18" ]]; then
@@ -279,3 +280,4 @@ eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`MET
 eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 14, \"${DURATION}\" )"
 eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 15, \"${ELEVATION}\" )"
 eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 17, \"${DECOD_SOFTWARE}\" )"
+eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 18, \"${DB_RADIO}\" )"

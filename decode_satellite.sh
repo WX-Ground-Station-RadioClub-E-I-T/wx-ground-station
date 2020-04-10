@@ -120,6 +120,7 @@ if [[ "$SAT" == "METEOR-M 2" ]]; then
     else
       mv ${IMAGE_DIR}/${FILEKEY}.png ${DRAFT_DIR}
       echo -e "\nComposite image too dark, probably bad quality." >> $LOGFILE
+      exit # No upload if there is no image
     fi
   fi
 
@@ -134,6 +135,7 @@ if [[ "$SAT" == "METEOR-M 2" ]]; then
     else
       mv ${IMAGE_DIR}/${FILEKEY}_IR.png ${DRAFT_DIR}
       echo -e "\nIR image too dark, probably bad quality." >> $LOGFILE
+      exit # No upload if there is no image
     fi
   fi
 

@@ -139,7 +139,7 @@ if [[ "$SAT" == "METEOR-M 2" ]]; then
     fi
   fi
 
-  if [[ -r "${AUDIO_FILE_BASE}.bmp" ]]; then
+  if [[ -r "${IMAGE_DIR}/${FILEKEY}.png" ]]; then
     echo "$WX_GROUND_DIR/upload.sh \"${SAT}\" ${FILEKEY}" >> $LOGFILE
     $WX_GROUND_DIR/upload.sh "${SAT}" ${FILEKEY} >> $LOGFILE 2>&1
   fi

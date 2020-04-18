@@ -35,6 +35,10 @@ Follow install instructions from here: <https://github.com/cubehub/doppler>
 
 Follow install instructions from here: <https://github.com/cubehub/demod>
 
+### Rotor
+
+Follow install instructions from here: <https://git.radio.clubs.etsit.upm.es/Meteor-automated/rotor>
+
 ### Wxtoimg
 
 [Link](https://wxtoimgrestored.xyz)

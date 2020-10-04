@@ -43,7 +43,6 @@ while IFS= read -r line; do
     MAXELEV=`echo $line | awk '{print $4}'`
 
     if [[ "$SAT" == "ISS (ZARYA)" ]]; then
-      SAT="ISS"
       FREQ=145800000
       SAMPLERATE=96000 # Must match with the sample rate on spyserver and decimation. Mine is 384K with 2 decimation (384000 / 4 = 96000)
       BANDWIDTH=5000

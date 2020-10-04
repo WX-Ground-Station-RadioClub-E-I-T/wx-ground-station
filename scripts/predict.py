@@ -7,6 +7,7 @@ import math
 import tree
 import argparse
 from datetime import timezone
+import re
 
 pi=math.pi
 
@@ -54,8 +55,13 @@ for i in passes.getNodes():
 
     # Create unique filekey
     satname_splitted = i.data.sate_id.split() # There are innesesary spaces
-    satnorm = satname_splitted[0] + "_" + satname_splitted[1]
-    satname = satname_splitted[0] + " " + satname_splitted[1]
+    # There are some white spaces that are innesesary
+    satname = ""
+    for word in satname_splitted:
+        satname += word + " "
+    satname = satname[:-1]
+    #format text for directory names
+    satnorm = re.sub('[\\~#%&*{}/:<>?|\"-()\[\] ]', '_', satname)
     outdate = i.data.aos.strftime("%Y%m%d-%H%M%S")
     filekey =  satnorm + "-" + outdate
 

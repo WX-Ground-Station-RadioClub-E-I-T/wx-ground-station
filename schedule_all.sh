@@ -38,7 +38,7 @@ while IFS= read -r line; do
     SAT=`echo $line | awk '{print $10 " " $11}'`
     START_EPOCH=`echo $line | awk '{print $3}'`
     JOB_START=`date --date="TZ=\"UTC\" @${START_EPOCH}" "+%H:%M %D"`
-    FILEKEY=`echo $line | awk '{print $8}'`
+    FILEKEY=`echo $line | awk '{print $8}' | sed 's/[][)(]//g'`
     JOB_TIMER=`echo $line | awk '{print $5}'`
     MAXELEV=`echo $line | awk '{print $4}'`
 

@@ -12,14 +12,18 @@ NEXT_PASSES=${WX_GROUND_DIR}/upcoming_passes.txt
 
 /usr/bin/logger "[WX weather station] Updating TLE from Celestrak"
 
-/usr/bin/wget -qr https://www.celestrak.com/NORAD/elements/weather.txt -O ${CELESTRAK_TLE_FILE}
-/usr/bin/grep "NOAA 15" ${CELESTRAK_TLE_FILE} -A 2 > ${TLE_FILE}
-/usr/bin/grep "NOAA 18" ${CELESTRAK_TLE_FILE} -A 2 >> ${TLE_FILE}
-/usr/bin/grep "NOAA 19" ${CELESTRAK_TLE_FILE} -A 2 >> ${TLE_FILE}
-/usr/bin/grep "METEOR-M 2" ${CELESTRAK_TLE_FILE} -A 2 >> ${TLE_FILE}
+/usr/bin/wget -qr https://www.celestrak.com/NORAD/elements/stations.txt -O ${CELESTRAK_TLE_FILE}
+/usr/bin/grep "ISS (ZARYA)" ${CELESTRAK_TLE_FILE} -A 2 > ${TLE_FILE}
+
+# Temporaly
+#/usr/bin/wget -qr https://www.celestrak.com/NORAD/elements/weather.txt -O ${CELESTRAK_TLE_FILE}
+#/usr/bin/grep "NOAA 15" ${CELESTRAK_TLE_FILE} -A 2 >> ${TLE_FILE}
+#/usr/bin/grep "NOAA 18" ${CELESTRAK_TLE_FILE} -A 2 >> ${TLE_FILE}
+#/usr/bin/grep "NOAA 19" ${CELESTRAK_TLE_FILE} -A 2 >> ${TLE_FILE}
+#/usr/bin/grep "METEOR-M 2" ${CELESTRAK_TLE_FILE} -A 2 >> ${TLE_FILE}
 
 #Remove all AT jobs
-
+# Temporaly do not remove jobs
 for i in `/usr/bin/atq | /usr/bin/awk '{print $1}'`;do /usr/bin/atrm $i;done
 
 # Remove previous calculated passes
@@ -38,7 +42,13 @@ while IFS= read -r line; do
     JOB_TIMER=`echo $line | awk '{print $5}'`
     MAXELEV=`echo $line | awk '{print $4}'`
 
-    if [[ "$SAT" == "NOAA 19" ]]; then
+    if [[ "$SAT" == "ISS (ZARYA)" ]]; then
+      FREQ=145800000
+      SAMPLERATE=96000 # Must match with the sample rate on spyserver and decimation. Mine is 384K with 2 decimation (384000 / 4 = 96000)
+      BANDWIDTH=5000
+      DEVIATION=5000
+      OUTPUTSAMPLERATE=11025
+    elif [[ "$SAT" == "NOAA 19" ]]; then
       FREQ=137100000
       SAMPLERATE=96000 # Must match with the sample rate on spyserver and decimation. Mine is 384K with 2 decimation (384000 / 4 = 96000)
       BANDWIDTH=32000

@@ -203,81 +203,119 @@ END_SCRIPT
   fi
 fi
 
+if [[ "$SAT" == "ISS (ZARYA)" ]]; then
+  AUDIO_FILE=${FILEKEY}.wav
+  AUDIO_FILE_DIR=${AUDIO_DIR}/${FILEKEY}.wav
+  IQ_FILE=${FILEKEY}.iq
+  IQ_FILE_DIR=${AUDIO_DIR}/${FILEKEY}.iq
+
+
+  echo "UPLOADING FILES"
+  echo ${AUDIO_FILE_DIR}
+  echo ${IQ_FILE_DIR}
+
+  DATE=`date +%Y-%m-%d`
+  HOST=$WX_GROUND_FTP_SERVER
+  USER=$WX_GROUND_FTP_USER
+  PASSWD=$WX_GROUND_FTP_PASS
+
+  # Upload to FTP
+
+  ftp -n $HOST <<END_SCRIPT
+  quote USER $USER
+  quote PASS $PASSWD
+  mkdir $FTP_DIRECTORY
+  cd $FTP_DIRECTORY
+  mkdir $SAT_NORM
+  cd $SAT_NORM
+  mkdir $DATE
+  cd $DATE
+  binary
+  put $AUDIO_FILE_DIR $AUDIO_FILE
+  put $IQ_FILE_DIR $IQ_FILE
+END_SCRIPT
+
+fi
+
 #---
 # Upload Data to MySQL Database
 #---
 
-# Get data from upcoming_passes.txt
-NEXT_PASSES=${WX_GROUND_DIR}/upcoming_passes.txt
-PASS_DATA=`grep ${FILEKEY} ${NEXT_PASSES}`
+if [[ "$SAT" == "NOAA 19" || "$SAT" == "NOAA 15" || "$SAT" == "NOAA 18" || "$SAT" == "METEOR-M 2" ]]; then
 
-DB_PATH="${SAT_NORM}/${DATE}/"
-DB_STATION_ID=1
-START_TIME=`echo ${PASS_DATA} | awk '{ print $3 }'`
-DB_DATE_OBS=`date --date="TZ=\"UTC\" @${START_TIME}" "+%Y-%m-%d %H:%M:%S" -u`
+  # Get data from upcoming_passes.txt
+  NEXT_PASSES=${WX_GROUND_DIR}/upcoming_passes.txt
+  PASS_DATA=`grep ${FILEKEY} ${NEXT_PASSES}`
 
-## Insert into archive-images query
-MYSQL_CMD="mysql ${DB_DATABASE} -h ${DB_HOST} -u ${DB_USER} -p${DB_PASS}"
-DB_INS_IMG_QUERY="INSERT INTO \`archive-images\`(\`PATH\`, \`FILEKEY\`, \`DATE_OBS\`, \`STATION_ID\`) VALUES (\"${DB_PATH}\", \"${FILEKEY}\", \"${DB_DATE_OBS}\", ${DB_STATION_ID}); SELECT LAST_INSERT_ID();"
+  DB_PATH="${SAT_NORM}/${DATE}/"
+  DB_STATION_ID=1
+  START_TIME=`echo ${PASS_DATA} | awk '{ print $3 }'`
+  DB_DATE_OBS=`date --date="TZ=\"UTC\" @${START_TIME}" "+%Y-%m-%d %H:%M:%S" -u`
 
-INSERT_OUTPUT=`eval ${MYSQL_CMD}<<<"${DB_INS_IMG_QUERY}"`
+  ## Insert into archive-images query
+  MYSQL_CMD="mysql ${DB_DATABASE} -h ${DB_HOST} -u ${DB_USER} -p${DB_PASS}"
+  DB_INS_IMG_QUERY="INSERT INTO \`archive-images\`(\`PATH\`, \`FILEKEY\`, \`DATE_OBS\`, \`STATION_ID\`) VALUES (\"${DB_PATH}\", \"${FILEKEY}\", \"${DB_DATE_OBS}\", ${DB_STATION_ID}); SELECT LAST_INSERT_ID();"
 
-IMAGE_ID=`echo ${INSERT_OUTPUT} | awk '{print $2}'` # Get ID from insert query
-DB_NORAD_ID=`echo ${PASS_DATA} | awk '{ print $9 }'`
-DURATION=`echo ${PASS_DATA} | awk '{ print $5 }'`
-DB_TLE=`/usr/bin/grep "${SAT}" ${WX_GROUND_DIR}/weather.tle -A 2 | tail -2`
-DB_AZI_RISE=`echo ${PASS_DATA} | awk '{ print $6 }'`
-DB_AZI_SET=`echo ${PASS_DATA} | awk '{ print $7 }'`
-DB_END_EPOCH=`expr ${START_TIME} + ${DURATION}`
-ELEVATION=`echo ${PASS_DATA} | awk '{ print $4 }'`
-DB_RADIO="Airspy HF+ Discovery"
+  INSERT_OUTPUT=`eval ${MYSQL_CMD}<<<"${DB_INS_IMG_QUERY}"`
+
+  IMAGE_ID=`echo ${INSERT_OUTPUT} | awk '{print $2}'` # Get ID from insert query
+  DB_NORAD_ID=`echo ${PASS_DATA} | awk '{ print $9 }'`
+  DURATION=`echo ${PASS_DATA} | awk '{ print $5 }'`
+  DB_TLE=`/usr/bin/grep "${SAT}" ${WX_GROUND_DIR}/weather.tle -A 2 | tail -2`
+  DB_AZI_RISE=`echo ${PASS_DATA} | awk '{ print $6 }'`
+  DB_AZI_SET=`echo ${PASS_DATA} | awk '{ print $7 }'`
+  DB_END_EPOCH=`expr ${START_TIME} + ${DURATION}`
+  ELEVATION=`echo ${PASS_DATA} | awk '{ print $4 }'`
+  DB_RADIO="Airspy HF+ Discovery"
 
 
-if [[ "$SAT" == "NOAA 19" || "$SAT" == "NOAA 15" || "$SAT" == "NOAA 18" ]]; then
-  case "$SAT" in
+  if [[ "$SAT" == "NOAA 19" || "$SAT" == "NOAA 15" || "$SAT" == "NOAA 18" ]]; then
+    case "$SAT" in
 
-    "NOAA 19")
+      "NOAA 19")
+        FREQ="137.1"
+        ;;
+        "NOAA 18")
+        FREQ="137.912"
+        ;;
+        "NOAA 15")
+        FREQ="137.62"
+        ;;
+      esac
+
+      BANDWIDTH="32000"
+      DEVIATION="32000"
+      TRANSPONDER="APT"
+      CODIFICATION="APT"
+      DECOD_SOFTWARE="wxtoimg V2.10.11"
+    fi
+
+    if [[ "$SAT" == "METEOR-M 2" ]]; then
       FREQ="137.1"
-      ;;
-    "NOAA 18")
-      FREQ="137.912"
-      ;;
-    "NOAA 15")
-      FREQ="137.62"
-      ;;
-  esac
+      BANDWIDTH="90000"
+      DEVIATION="NaN"
+      TRANSPONDER="LRPT 1"
+      CODIFICATION="LRPT"
+      DECOD_SOFTWARE="meteor_decode @8021339"
+    fi
 
-  BANDWIDTH="32000"
-  DEVIATION="32000"
-  TRANSPONDER="APT"
-  CODIFICATION="APT"
-  DECOD_SOFTWARE="wxtoimg V2.10.11"
+    # Insert into archive-images-metadata
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 1, \"${SAT}\" )"
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 2, \"${DB_NORAD_ID}\" )"
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 3, \"${FREQ}\" )"
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 4, \"${TRANSPONDER}\" )"
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 5, \"${BANDWIDTH}\" )"
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 6, \"${DEVIATION}\" )"
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 7, \"${CODIFICATION}\" )"
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 8, \"${DB_TLE}\" )"
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 9, \"${DB_DATE_OBS}\" )"
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 10, \"${DB_AZI_RISE}\" )"
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 11, \"${DB_AZI_SET}\" )"
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 12, \"${START_TIME}\" )"
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 13, \"${DB_END_EPOCH}\" )"
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 14, \"${DURATION}\" )"
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 15, \"${ELEVATION}\" )"
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 17, \"${DECOD_SOFTWARE}\" )"
+    eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 18, \"${DB_RADIO}\" )"
+
 fi
-
-if [[ "$SAT" == "METEOR-M 2" ]]; then
-  FREQ="137.1"
-  BANDWIDTH="90000"
-  DEVIATION="NaN"
-  TRANSPONDER="LRPT 1"
-  CODIFICATION="LRPT"
-  DECOD_SOFTWARE="meteor_decode @8021339"
-fi
-
-# Insert into archive-images-metadata
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 1, \"${SAT}\" )"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 2, \"${DB_NORAD_ID}\" )"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 3, \"${FREQ}\" )"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 4, \"${TRANSPONDER}\" )"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 5, \"${BANDWIDTH}\" )"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 6, \"${DEVIATION}\" )"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 7, \"${CODIFICATION}\" )"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 8, \"${DB_TLE}\" )"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 9, \"${DB_DATE_OBS}\" )"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 10, \"${DB_AZI_RISE}\" )"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 11, \"${DB_AZI_SET}\" )"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 12, \"${START_TIME}\" )"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 13, \"${DB_END_EPOCH}\" )"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 14, \"${DURATION}\" )"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 15, \"${ELEVATION}\" )"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 17, \"${DECOD_SOFTWARE}\" )"
-eval ${MYSQL_CMD}<<<"INSERT INTO \`archive-images-metadata\`(\`IMAGE_ID\`, \`METADATA_ID\`, \`VALUE\`) VALUES (${IMAGE_ID}, 18, \"${DB_RADIO}\" )"

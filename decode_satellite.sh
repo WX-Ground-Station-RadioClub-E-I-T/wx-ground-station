@@ -144,3 +144,8 @@ if [[ "$SAT" == "METEOR-M 2" ]]; then
     $WX_GROUND_DIR/upload.sh "${SAT}" ${FILEKEY} >> $LOGFILE 2>&1
   fi
 fi
+
+if [[ "$SAT" == "ISS (ZARYA)" ]]; then
+  echo "$WX_GROUND_DIR/upload.sh \"${SAT}\" ${FILEKEY}" >> $LOGFILE
+  $WX_GROUND_DIR/upload.sh "${SAT}" ${FILEKEY} >> $LOGFILE 2>&1
+fi

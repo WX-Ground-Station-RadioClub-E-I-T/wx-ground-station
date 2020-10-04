@@ -31,16 +31,16 @@ LOGFILE=${LOG_DIR}/${FILEKEY}.log
 echo $@ >> $LOGFILE
 
 if [[ "$SAT" == "NOAA 19" || "$SAT" == "NOAA 15" || "$SAT" == "NOAA 18" ]]; then
-  echo "/usr/bin/timeout $DURATION /usr/bin/ss_client iq -r ${SERVER} -q ${PORT} -f ${FREQ} -s ${SAMPLERATE} 2>> $LOGFILE | /usr/local/bin/rotor --tlefile ${TLE_FILE} --tlename \"${SAT}\" --location lat=${RX_LAT},lon=${RX_LON},alt=${RX_ALT} --server ${ROTCTLD_SERVER} --port ${ROTCTLD_PORT} 2>> $LOGFILE  | /usr/local/bin/doppler track -s ${SAMPLERATE} -i i16 --tlefile ${TLE_FILE} --tlename \"${SAT}\" --location lat=${RX_LAT},lon=${RX_LON},alt=${RX_ALT} --frequency ${FREQ} 2>> $LOGFILE | /usr/bin/tee ${IQ_FILE} | /usr/local/bin/demod --samplerate ${SAMPLERATE} --intype i16 --outtype i16 --bandwidth ${BANDWIDTH} fm --deviation ${DEVIATION} 2>> $LOGFILE | /usr/bin/sox -t raw -e signed-integer -r ${SAMPLERATE} -b 16 -c 1 -V1 - ${AUDIO_FILE} rate ${OUTPUTSAMPLERATE}" >> $LOGFILE
+  echo "/usr/bin/timeout $DURATION /usr/bin/ss_client iq -r ${SERVER} -q ${PORT} -f ${FREQ} -s ${SAMPLERATE} 2>> $LOGFILE | /usr/local/bin/doppler track -s ${SAMPLERATE} -i i16 --tlefile ${TLE_FILE} --tlename \"${SAT}\" --location lat=${RX_LAT},lon=${RX_LON},alt=${RX_ALT} --frequency ${FREQ} 2>> $LOGFILE | /usr/bin/tee ${IQ_FILE} | /usr/local/bin/demod --samplerate ${SAMPLERATE} --intype i16 --outtype i16 --bandwidth ${BANDWIDTH} fm --deviation ${DEVIATION} 2>> $LOGFILE | /usr/bin/sox -t raw -e signed-integer -r ${SAMPLERATE} -b 16 -c 1 -V1 - ${AUDIO_FILE} rate ${OUTPUTSAMPLERATE}" >> $LOGFILE
 
-  /usr/bin/timeout $DURATION /usr/bin/ss_client iq -r ${SERVER} -q ${PORT} -f ${FREQ} -s ${SAMPLERATE} 2>> $LOGFILE | /usr/local/bin/rotor --tlefile ${TLE_FILE} --tlename "${SAT}" --location lat=${RX_LAT},lon=${RX_LON},alt=${RX_ALT} --server ${ROTCTLD_SERVER} --port ${ROTCTLD_PORT} 2>> $LOGFILE | /usr/local/bin/doppler track -s ${SAMPLERATE} -i i16 --tlefile ${TLE_FILE} --tlename "${SAT}" --location lat=${RX_LAT},lon=${RX_LON},alt=${RX_ALT} --frequency ${FREQ} 2>> $LOGFILE | /usr/bin/tee ${IQ_FILE} | /usr/local/bin/demod --samplerate ${SAMPLERATE} --intype i16 --outtype i16 --bandwidth ${BANDWIDTH} fm --deviation ${DEVIATION} 2>> $LOGFILE | /usr/bin/sox -t raw -e signed-integer -r ${SAMPLERATE} -b 16 -c 1 -V1 - ${AUDIO_FILE} rate ${OUTPUTSAMPLERATE}
+  /usr/bin/timeout $DURATION /usr/bin/ss_client iq -r ${SERVER} -q ${PORT} -f ${FREQ} -s ${SAMPLERATE} 2>> $LOGFILE | /usr/local/bin/doppler track -s ${SAMPLERATE} -i i16 --tlefile ${TLE_FILE} --tlename "${SAT}" --location lat=${RX_LAT},lon=${RX_LON},alt=${RX_ALT} --frequency ${FREQ} 2>> $LOGFILE | /usr/bin/tee ${IQ_FILE} | /usr/local/bin/demod --samplerate ${SAMPLERATE} --intype i16 --outtype i16 --bandwidth ${BANDWIDTH} fm --deviation ${DEVIATION} 2>> $LOGFILE | /usr/bin/sox -t raw -e signed-integer -r ${SAMPLERATE} -b 16 -c 1 -V1 - ${AUDIO_FILE} rate ${OUTPUTSAMPLERATE}
 
   echo "$WX_GROUND_DIR/decode_satellite.sh \"${SAT}\" \"${FILEKEY}\" ${TLE_FILE} ${START_TIME} ${OUTPUTSAMPLERATE}" >> $LOGFILE
   $WX_GROUND_DIR/decode_satellite.sh "${SAT}" "${FILEKEY}" ${TLE_FILE} ${START_TIME} ${OUTPUTSAMPLERATE}
 elif [[ "$SAT" == "METEOR-M 2" ]]; then
-  echo "/usr/bin/timeout $DURATION /usr/bin/ss_client iq -r ${SERVER} -q ${PORT} -f ${FREQ} -s ${SAMPLERATE} 2>> $LOGFILE | /usr/local/bin/rotor --tlefile ${TLE_FILE} --tlename \"${SAT}\" --location lat=${RX_LAT},lon=${RX_LON},alt=${RX_ALT} --server ${ROTCTLD_SERVER} --port ${ROTCTLD_PORT} 2>> $LOGFILE >> ${IQ_FILE}" >> $LOGFILE
+  echo "/usr/bin/timeout $DURATION /usr/bin/ss_client iq -r ${SERVER} -q ${PORT} -f ${FREQ} -s ${SAMPLERATE} 2>> $LOGFILE >> ${IQ_FILE}" >> $LOGFILE
 
-  /usr/bin/timeout $DURATION /usr/bin/ss_client iq -r ${SERVER} -q ${PORT} -f ${FREQ} -s ${SAMPLERATE} 2>> $LOGFILE | /usr/local/bin/rotor --tlefile ${TLE_FILE} --tlename "${SAT}" --location lat=${RX_LAT},lon=${RX_LON},alt=${RX_ALT} --server ${ROTCTLD_SERVER} --port ${ROTCTLD_PORT} 2>> $LOGFILE >> ${IQ_FILE}
+  /usr/bin/timeout $DURATION /usr/bin/ss_client iq -r ${SERVER} -q ${PORT} -f ${FREQ} -s ${SAMPLERATE} 2>> $LOGFILE >> ${IQ_FILE}
 
   if [ `wc -c <${IQ_FILE}` -le 1000000 ]; then
       echo "Audio file ${IQ_FILE} too small, probably wrong recording" >> $LOGFILE
@@ -57,4 +57,11 @@ elif [[ "$SAT" == "METEOR-M 2" ]]; then
 
   echo "$WX_GROUND_DIR/decode_satellite.sh \"${SAT}\" ${FILEKEY}" >> $LOGFILE
   $WX_GROUND_DIR/decode_satellite.sh "${SAT}" "${FILEKEY}"
+elif [[ "$SAT" == "ISS (ZARYA)" ]]; then
+  echo "/usr/bin/timeout $DURATION /usr/bin/ss_client iq -r ${SERVER} -q ${PORT} -f ${FREQ} -s ${SAMPLERATE} 2>> $LOGFILE | /usr/local/bin/doppler track -s ${SAMPLERATE} -i i16 --tlefile ${TLE_FILE} --tlename \"${SAT}\" --location lat=${RX_LAT},lon=${RX_LON},alt=${RX_ALT} --frequency ${FREQ} 2>> $LOGFILE | /usr/bin/tee ${IQ_FILE} | /usr/local/bin/demod --samplerate ${SAMPLERATE} --intype i16 --outtype i16 --bandwidth ${BANDWIDTH} fm --deviation ${DEVIATION} 2>> $LOGFILE | /usr/bin/sox -t raw -e signed-integer -r ${SAMPLERATE} -b 16 -c 1 -V1 - ${AUDIO_FILE} rate ${OUTPUTSAMPLERATE}" >> $LOGFILE
+
+  /usr/bin/timeout $DURATION /usr/bin/ss_client iq -r ${SERVER} -q ${PORT} -f ${FREQ} -s ${SAMPLERATE} 2>> $LOGFILE | /usr/local/bin/doppler track -s ${SAMPLERATE} -i i16 --tlefile ${TLE_FILE} --tlename "${SAT}" --location lat=${RX_LAT},lon=${RX_LON},alt=${RX_ALT} --frequency ${FREQ} 2>> $LOGFILE | /usr/bin/tee ${IQ_FILE} | /usr/local/bin/demod --samplerate ${SAMPLERATE} --intype i16 --outtype i16 --bandwidth ${BANDWIDTH} fm --deviation ${DEVIATION} 2>> $LOGFILE | /usr/bin/sox -t raw -e signed-integer -r ${SAMPLERATE} -b 16 -c 1 -V1 - ${AUDIO_FILE} rate ${OUTPUTSAMPLERATE}
+
+  echo "$WX_GROUND_DIR/decode_satellite.sh \"${SAT}\" \"${FILEKEY}\" ${TLE_FILE} ${START_TIME} ${OUTPUTSAMPLERATE}" >> $LOGFILE
+  $WX_GROUND_DIR/decode_satellite.sh "${SAT}" "${FILEKEY}" ${TLE_FILE} ${START_TIME} ${OUTPUTSAMPLERATE}
 fi
